@@ -51,10 +51,22 @@ leadgen_grouped). Rapporter per annonsesett: forbruk, leads, CPL — og totalen
 for i går. NB: pikselen og CRM-et teller ulikt — CRM-tallet er fasit;
 sammenlign gjerne gårsdagens tall fra begge.
 
-## Rapportformat
+## Rapportformat og varsling
 
 Kort og skannbart: overskrift med antall dager igjen til webinaret, punktliste
 med tallene, én linje vurdering («bra trykk» / «vurder mer budsjett på X»).
+
+Post rapporten i teamkanalen (f.eks. Slack) med agentens faste prefiks-emoji,
+så alle ser at det er agenten som skriver. Uten kanal: bare skriv fila.
+
+Varsle SAMME DAG, utenom den daglige rapporten, når:
+- ingen nye påmeldte på 24 timer mens annonsene fortsatt brenner budsjett
+- CPL er vesentlig over din referanse to dager på rad
+- tagg-vakta fant feiltaggede påmeldinger (nevn hvor mange, og at de er rettet)
+- påmeldingssiden viser en dato som allerede har passert — da finnes det ingen
+  ny sending, og annonser som fortsatt kjører sender folk til et dødt webinar
+
+Rolige dager uten avvik: bare den korte rapporten, ingen ekstra varsling.
 
 **Dagen etter en sending:** rapporter siste totaltall og minn om å høste
 ja-leads fra sendingen. Viser steg 0 en ny dato: fortsett mot den. Viser
