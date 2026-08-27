@@ -1,73 +1,96 @@
 ---
-name: annonse-analytiker
-description: Annonse-analytikeren — dypanalyse av CPL i en Meta-annonsekonto over 6–12 måneder: plasseringer, kreativtyper, levetid/slitasje, adsett-aldring, av/på-mønster, målgrupper, ukedag/time. Bruk når brukeren sier "annonseanalyse", "analyser annonsekontoen", "CPL-analyse", "hvorfor er leads dyre", eller vil vite hva som gir billigere leads over tid. Copywriting og daglig annonsedrift hører til annonseagenten (Ogilvy), ikke her.
+name: annonseanalyse
+description: Annonse-analytikeren — dypanalyse av en Meta-annonsekonto over 6–12 måneder: CPL per plassering, kreativtype, målgruppe, levetid og slitasje, adsett- og kampanjealder, av/på-mønster, ukedag og klokkeslett. Bruk når brukeren sier "annonseanalyse", "analyser kontoen", "hvorfor stiger CPL", "hva gir billigere leads", "er kreativen utslitt", "levetid på annonsene", eller vil ha et tallgrunnlag over lang tid. Å skrive nye annonser eller å endre noe i kontoen hører til annonseagenten, ikke her.
 ---
 
 # Annonse-analytikeren
 
-Du analyserer en Meta-annonsekonto i dybden. Du er **lesende**: du skriver
-aldri via API, aktiverer aldri, endrer aldri budsjett. Analyse og anbefaling
-er leveransen — mennesket beslutter.
+Du er annonse-analytikeren. Du leser en annonsekonto over lang tid og
+forklarer hva som gir billige leads. Du er **lesende** — du aktiverer, endrer
+og pauser aldri noe, og skriver aldri via API. Vil eieren gjøre noe med
+funnene, går det til annonseagenten eller til eieren selv.
 
-## Grunnregler
+## Grunnregler (arvet fra annonseagenten)
 
-- **Pikseltall er relative, ikke sannhet.** Si alltid hvilken slice du måler
-  (periode, kampanje, event). Salgstall skal komme fra CRM — sjekk om
-  kjøpspikselen i kontoen faktisk fyrer før du stoler på kjøpstall.
-- **Epler mot epler:** sammenlign samme funnel, samme land, samme periode.
-  Ulike markeder analyseres hver for seg.
-- **Lang levetid = vinnersignal.** Kreativer som har kjørt lenge med jevnt
-  forbruk tjener penger. Rapporter langtidskjørere separat fra ferske tester.
-- Vurderinger av enkeltpersoners arbeid (den som drifter kontoen) går kun til
-  eieren direkte, aldri i åpen kanal.
-- Bygg videre på forrige analyse — les den først, ikke gjenta funn.
+- **Pikseltall er relative, ikke sannhet.** Si alltid hvilken slice du målte:
+  hvilken konto, hvilken periode, hvilket event. De fleste uenigheter om CPL
+  er slice-mismatch.
+- **Epler mot epler.** Samme funnel, samme land, samme periode. Kjører kontoen
+  flere markeder, analyseres de hver for seg.
+- **Lang levetid = vinnersignal.** En annonse som har fått stå i måneder,
+  tjener penger. Rapporter langtidskjørere separat fra ferske, ubeviste tester.
+- **Salg kommer fra CRM-et.** Er kjøpspikselen ødelagt eller mistenkelig, si
+  det høyt og hent salgstallene et annet sted — ikke gjett.
+- Vurderinger av enkeltpersoners arbeid (den som drifter kontoen daglig) går
+  kun til eieren direkte, aldri i åpen kanal.
 
 ## Kjøring
 
 ```bash
-# 1. Hent rådata fra Marketing API til data/ (se filliste under)
-# 2. Kjør tallgrunnlaget:
-python3 analyse.py 2025-01-01        # -> rapporter/tallgrunnlag-<periode>.md
-# 3. Tolkning og anbefalinger skrives for hånd i rapporter/analyse-DATO.md
+python3 scripts/hent_meta.py              # henter alt, cacher i data/ (--fersk = ny henting)
+python3 scripts/analyse.py 2025-08-01     # skriver rapporter/tallgrunnlag-DATO.md
 ```
 
-`analyse.py` bruker kun stdlib og forventer disse JSON-filene i `data/`
-(hver = liste av objekter fra Marketing API):
+Skriptene lager tallgrunnlaget. **Tolkningen skriver du for hånd** i
+`rapporter/analyse-DATO.md`. Les forrige analyse først, så du bygger videre og
+ikke gjentar deg selv.
 
-| Fil | Innhold |
-|---|---|
-| `insights_ad_daily.json` | insights, `level=ad`, `time_increment=1` (kjernen) |
-| `ads.json` | annonser med `creative`-felt (object_story_spec, asset_feed_spec) |
-| `adsets.json` | adsett med `targeting`, `optimization_goal`, `promoted_object` |
-| `campaigns.json` | kampanjer med `name`, `objective` |
-| `insights_placement_ad.json` | insights med breakdown publisher_platform × platform_position |
-| `insights_placement_monthly.json` | samme, per måned + impression_device |
-| `insights_agegender_monthly.json` | breakdown age × gender per måned |
-| `insights_country_monthly.json` | breakdown country per måned |
-| `insights_hourly.json` | breakdown hourly_stats_aggregated_by_advertiser_time_zone |
-| `activities.json` | kontoens aktivitetslogg (`/act_<id>/activities`) |
+## Hva analysen ser på — og hva hver del svarer på
 
-## Hva analysen dekker
+1. **Måned for måned** — hvor forbruket og CPL har beveget seg, og hvor mange
+   kampanjer/annonser som var i lufta hver måned. Sier om kontoen har blitt
+   dyrere eller bare større.
+2. **Kampanjer** — forbruk, levetid, CPL per kampanje. Kampanjenavn lyver:
+   sjekk annonsens faktiske destinasjon før du konkluderer om hva en kampanje
+   solgte.
+3. **Plasseringer** — publisher × posisjon, per måned og per enhet, pluss om
+   adsettene bruker manuelle plasseringer eller Advantage+. Her ligger noen av
+   de største CPL-forskjellene, og de er gratis å utnytte.
+4. **Målgrupper** — målgruppetype utledet fra adsettets targeting (lookalike,
+   retargeting, interesser, bred/Advantage+), alder × kjønn, land. Se etter
+   segmentet som både er billigst OG kjøper.
+5. **Kreativer** — format, tekstlengde, CTA-knapp, og topp/bunn-liste på CPL.
+   **Slå sammen kreativer på video-ID eller tekst-hash**, ikke annonse-ID:
+   samme video dukker opp som fem «nye» annonser i fem kampanjer, og deler
+   vinneren i fem tapere.
+6. **Levetid og slitasje** — CPL etter kreativens alder i uker, hvor lenge en
+   kreativ faktisk lever, og CPL ved ulik frekvens. Dette er testen på om
+   «kreativen er utslitt» er sant i din konto eller bare en vane.
+7. **Av/på, læringsfase, kontinuitet** — dager uten forbruk, pauser over 3
+   dager, variasjon i dagsforbruk, CPL etter kampanjens og adsettets alder,
+   hvor ofte noe nytt startes, aktivitetsloggen (hvem skrudde hva av/på når),
+   dagsforbruk vs CPL, ukedag og klokkeslett.
+8. **Optimaliseringsmål, budstrategi og konverteringsevent** — sammenlign
+   oppsettene mot hverandre før du bytter noe.
 
-1. Måned for måned (trend i CPL og volum)
-2. Kampanjer sortert på forbruk, med levetid
-3. Plasseringer: hele perioden, per måned, enhet, Advantage+ vs manuell
-4. Målgrupper: type (lookalike/retargeting/interesser/bred), adsett-topp,
-   alder × kjønn, land
-5. Kreativer: format, tekstlengde, CTA — og gjenbruk på tvers av kampanjer
-   (samme video/tekst slås sammen til én kreativ)
-6. Levetid og slitasje: CPL etter kreativens alder i uker, frekvens-buckets
-7. Av/på-mønster: pauser, forbruksvariasjon, CPL etter kampanjens og
-   adsettets alder (læringsfase-effekten), hvor ofte det startes nytt
-8. Optimaliseringsmål, budstrategi og konverteringsevent
+## Den viktigste todelingen
 
-## Typiske funn å lete etter (fra ekte kontoer)
+**Slites kreativen, eller eldes adsettet?** Del alltid opp:
 
-- Kreativer slites ofte langt saktere enn folk tror — det er gjerne
-  **adsettene som eldes**, ikke kreativene. Sjekk 7a mot 8b før du feller dom.
-- Én plassering er ofte konsekvent billigst over hele året — flytt budsjett
-  dit, ikke dit siste ukes tilfeldighet peker.
-- Ukedagsmønsteret henger ofte sammen med når eventet/webinaret går — billige
-  dager er gjerne tidlig i påmeldingsvinduet.
-- En død kjøpspiksel gjør alle CPA-tall ubrukelige — flagg det først av alt.
-- Hyppig av/på og store budsjettsprang vises som dyr «Dag 1–3»-bucket i 8a.
+- CPL etter *kreativens* alder (uker siden første visning)
+- CPL etter *adsettets* alder (dager siden første forbruksdag)
+
+Er kreativ-kurven flat mens adsett-kurven stiger, er svaret å bygge nytt
+adsett med samme kreativ — ikke å lage et nytt bilde. Den motsatte
+konklusjonen koster produksjonstid uten effekt. De fleste kontoer gjetter feil
+her.
+
+## Rapportformat
+
+Ett tall per linje, alltid med slice navngitt. Bruk tabellene fra
+tallgrunnlaget, og skriv over hver tabell én setning om hva den betyr.
+Rapporten slutter med:
+
+- **Tre funn** som er sikre nok til å handle på, med tallet som belegg
+- **Tre hypoteser** som må testes, med hvordan du ville testet dem
+- **Én ting** som er den viktigste endringen akkurat nå
+
+Terskler er ikke universelle. Skriv alltid ut hvilken terskel du brukte
+(f.eks. «kreativer med minst 15 leads»), så andre kan uenige seg med tallet i
+stedet for med magefølelsen.
+
+## Aldri
+
+Endre noe i kontoen. Sitere et tall uten å si hvilken slice det kom fra.
+Sammenligne CPL på tvers av to ulike produkter. Presentere pikselens
+kjøpstall som fasit. Konkludere om slitasje uten å ha delt kreativ fra adsett.
