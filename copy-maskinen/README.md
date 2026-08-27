@@ -32,8 +32,8 @@ gjenbruker samme frase i hele settet, eller publiserer selv. Kunden godkjenner.
 
 **Kom i gang:**
 1. Opprett `.claude/skills/copy-maskin/` i prosjektet ditt og lim inn `SKILL.md`.
-2. Kopier `HISTORIEBANK-MAL.md` inn i prosjektmappa som `HISTORIEBANK.md` og
-   `KONTEKST.md`, og fyll ut det du allerede vet: hva kunden IKKE vil si,
+2. Del `HISTORIEBANK-MAL.md` i to filer i prosjektmappa — `HISTORIEBANK.md`
+   og `KONTEKST.md` — og fyll ut det du allerede vet: hva kunden IKKE vil si,
    hvilke påstander som er lov, hvordan kunden faktisk snakker.
 3. Be kunden om ett 30-minutters stemmenotat: «fortell om de tre siste
    kundene du snakket med, og hva som overrasket deg». Transkriber det og

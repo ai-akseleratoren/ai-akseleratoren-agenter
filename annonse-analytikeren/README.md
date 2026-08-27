@@ -1,43 +1,53 @@
 # Annonse-analytikeren
 
-En AI-agent + et Python-script som gjør dypanalyse av Meta-annonsekontoen din
-over 6–12 måneder: hva gir egentlig billige leads? Plasseringer, kreativtyper,
-levetid og slitasje, adsett-aldring, av/på-mønster, målgrupper, ukedag og time.
+En AI-agent som graver seg gjennom 6–12 måneder med annonsedata og finner ut
+hva som faktisk gir billige leads — plassering, format, målgruppe, ukedag,
+klokkeslett, og hvor lenge en annonse holder før den slutter å virke.
 
 ## Hvilket problem løser den?
 
-Ads Manager viser deg siste uke. Den viser deg ikke:
+- Annonsekontoen din har ett år med svar i seg, men Ads Manager viser deg bare
+  de siste sju dagene.
+- «Kreativen er utslitt» er som regel gjetning. De fleste slår av ting som
+  virker, og lar ting som ikke virker stå.
+- Ingen sammenligner CPL på tvers av plassering, alder, kjønn og ukedag — det
+  er for mye klikking.
+- Vinnerannonser dukker opp igjen som «nye» annonser i nye kampanjer, så tallene
+  spres og vinneren blir usynlig.
 
-- om kreativene dine faktisk slites — eller om det er adsettene som eldes
-- hvilke plasseringer som konsekvent gir billigst leads over et helt år
-- hva stadig av/på-skruing og budsjettrykk koster i læringsfase
-- hvilke kreativer som er gjenbrukt i mange kampanjer og fortsatt leverer
-
-Analytikeren henter rådata på annonsenivå per dag og regner ut alt dette som
-markdown-tabeller du kan lese — og som Claude kan tolke for deg.
+Analytikeren henter alt via Meta Marketing API, cacher det lokalt og skriver ett
+langt tallgrunnlag du kan lese på 15 minutter. Den er **lesende** — den rører
+aldri kontoen.
 
 ## Hva du trenger
 
-- Claude Code og Python 3 (scriptet bruker kun standardbiblioteket)
-- Meta Marketing API-token med LESE-tilgang til annonsekontoen
-- En mappe med `data/` (rådata som JSON) og `rapporter/` (output)
+- Claude Code og Python 3 (skriptene bruker kun standardbiblioteket)
+- Meta Marketing API-token med **lesetilgang** til annonsekontoen din
+- Annonsekonto-ID-en din (`act_…`)
+- Litt tålmodighet første gang: full henting av 12 måneder tar noen minutter
 
 ## Kom i gang
 
-1. Kopier mappen inn i et eget prosjekt, og `SKILL.md` til
-   `.claude/skills/annonse-analytiker/SKILL.md`.
-2. Kopier `.env.example` til `.env` og fyll inn token og konto-ID.
-3. Be Claude hente rådata fra Marketing API til `data/` (filene scriptet
-   forventer står listet i `SKILL.md`) — insights på annonsenivå per dag er
-   kjernen.
-4. Kjør `python3 analyse.py 2025-01-01` — tallgrunnlaget havner i `rapporter/`.
-5. Be agenten tolke: «Les tallgrunnlaget og skriv analyse med anbefalinger.»
-   Tolkningen skrives alltid som egen fil, oppå forrige analyse.
+1. Kopier `SKILL.md` inn som `.claude/skills/annonseanalyse/SKILL.md` i
+   prosjektet ditt, og legg `hent_meta.py` og `analyse.py` i `scripts/`.
+2. Kopier `.env.example` til `.env` og fyll inn token og konto-ID. Aldri i git.
+3. Hent dataene: `python3 scripts/hent_meta.py` (cacher i `data/` —
+   `--fersk` tvinger ny henting).
+4. Kjør analysen: `python3 scripts/analyse.py 2025-08-01` — den skriver
+   `rapporter/tallgrunnlag-….md`.
+5. Be Claude lese tallgrunnlaget og skrive tolkningen i
+   `rapporter/analyse-DATO.md`. Neste gang: les forrige analyse først, så du
+   bygger videre i stedet for å gjenta deg selv.
 
-## Viktigste prinsipper
+## De fem tolkningsreglene
 
-- Pikseltall er relative, ikke sannhet. Si alltid hvilken slice du måler.
-- Agenten er **lesende** — den endrer aldri noe i kontoen via API.
-- Epler mot epler: sammenlign samme funnel/land/periode.
-- Lang levetid = vinnersignal. Rapporter langtidskjørere separat fra ferske
-  tester.
+1. **Lang levetid = vinnersignal.** En annonse som har fått stå i måneder,
+   tjener penger. Rapporter langtidskjørere separat fra ferske tester.
+2. **Skill kreativ fra adsett.** Kreativer slites ofte ikke i det hele tatt,
+   mens adsettet eldes. Da er det adsettet som skal byttes, ikke bildet.
+3. **Pikseltall er relative, ikke sannhet.** Si alltid hvilken slice du målte
+   (hvilken konto, hvilket vindu, hvilket event). Salg hentes fra CRM-et.
+4. **Epler mot epler.** Samme funnel, samme land, samme periode. Aldri to
+   ulike produkter i samme tabell.
+5. **Én kreativ kan hete fem ting.** Slå sammen på video-ID eller tekst-hash
+   før du kårer vinnere — ellers deler du vinneren i fem tapere.
