@@ -37,8 +37,15 @@ Har du aldri gjort dette før: start med **Referat-agenten** eller
 - **zoom-leads-agenten** — høster leads fra webinaret og lager ringeliste
 - **webinar-telleren** — teller påmeldinger og varsler deg underveis
 - **sully-funnelvakt** — overvåker at traktene dine faktisk virker
+- **thelma-videoklipper** — videoannonser fra din egen stemme, ferdig i CapCut
+
+### Fellesskap og medlemskap
+- **skool-redaktoren** — holder liv i community-et ditt etter en fast ukesrytme
+- **medlemsvakten** — avstemmer hvem som betaler mot hvem som har tilgang
+- **kursopptak-agenten** — Zoom-sending inn, ferdig Classroom-leksjon ut
 
 ### Drift og hverdag
+- **stemme** — diktert tekst inn, ferdig formatert tekst ut
 - **jocko-assistent** — morgenbrief, ukesplan, todo-oppfølging, accountability
 - **alfred-epostagent** — flere innbokser, to sveip om dagen, rydder selv
 - **referat-agenten** — møte inn, referat og oppgaveliste ut
