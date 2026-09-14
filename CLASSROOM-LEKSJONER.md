@@ -901,3 +901,97 @@ rapportere kort — er nøyaktig det samme du gjør i en agent som teller kroner
   treneren var sur på ham. Det er derfor nyhetssveipen finnes.
 
 ---
+
+---
+
+## SEKSJON: Nye agenter (september)
+
+### Leksjon: Thelma — videoannonser fra din egen stemme
+
+Du snakker inn tretti sekunder på mobilen. Thelma transkriberer det du sa, lager
+videoklipp som passer hvert ord, legger dem der ordene faller, og skriver hele
+prosjektet inn i CapCut — ferdig lagt ut på tidslinja.
+
+Hun er oppkalt etter Thelma Schoonmaker, som har klippet hver Scorsese-film
+siden Raging Bull og sier at hun klipper med ørene, ikke med øynene. Det er
+hele metoden: stemmen først, bildene etterpå.
+
+**Du trenger:** Claude Code, en fal.ai-konto med litt saldo, CapCut, og repoet
+VectCutAPI klonet til `~/capcutapi`.
+
+**Hva det koster:** seks cent per sekund video. En hel annonse med atten kutt
+lander på rundt seks dollar.
+
+**To feller jeg gikk i, så du slipper:** CapCut må være helt avsluttet med ⌘Q
+før prosjektet leveres, ellers overskriver den alt. Og prosjekter med tekstspor
+nekter å åpne i CapCut International — legg teksten på med auto-teksting
+etterpå i stedet.
+
+Mappa heter `thelma-videoklipper`.
+
+---
+
+### Leksjon: Medlemsvakten — hvem betaler, og hvem har egentlig tilgang
+
+Betalingen skjer i Stripe. Tilgangen gis manuelt i Skool. Det finnes ingen
+kobling mellom dem, så det lekker begge veier samtidig.
+
+Første gang jeg kjørte denne på mitt eget medlemskap fant den 26 som betalte
+uten å ha tilgang. Noen hadde betalt for et helt år.
+
+Agenten deler medlemmene i fire bunker og kjører et vennlig påminnelsesløp ved
+manglende betaling — dag 1, 7, 14 og 21. Den fjerner aldri noen selv.
+
+**Du trenger:** en Stripe-nøkkel med lesetilgang, og medlemslista eksportert fra
+Skool. Husk at «aktiv» er utledet, ikke hentet — les avsnittet om det i README.
+
+Mappa heter `medlemsvakten`.
+
+---
+
+### Leksjon: Skool-redaktøren — fellesskapet som ikke dør
+
+Fem innlegg i uka etter en rytme der hvert innlegg mater det neste: mandag viser
+du noe du har bygget, fredag får de et oppdrag, onsdag deler de hva de fikk til.
+
+Et community dør av at eieren poster og ingen svarer. Grunnen er nesten alltid
+at innleggene er til å beundre, ikke til å svare på. Agenten snur det.
+
+Den henter råstoff fra git-loggen din — altså det du faktisk gjorde forrige uke
+— og legger utkastet ferdig i editoren. Du trykker POST.
+
+Mappa heter `skool-redaktoren`.
+
+---
+
+### Leksjon: Kursopptak-agenten — Zoom inn, ferdig leksjon ut
+
+Henter opptak, chat og transkript fra sendingen din og pakker det som en
+leksjon du kan lime rett inn her i Classroom.
+
+Den tar også vare på det de fleste mister: de siste ti minuttene av chatten,
+der folk melder interesse for det du selger.
+
+**Én advarsel:** ikke bruk Zooms eget transkript på norsk. ASR-en står på
+engelsk og gjør norsk tale til vrøvl — «Claude Code» blir «CloudKord». Kjør
+lydfila gjennom noe som kan norsk i stedet.
+
+Mappa heter `kursopptak-agenten`.
+
+---
+
+### Leksjon: Stemme — diktert tekst inn, ferdig tekst ut
+
+Den enkleste agenten i biblioteket, og den jeg bruker mest selv.
+
+Du dikterer på mobilen, limer inn, og får tilbake en ryddet versjon i riktig
+format — e-post, notat, innlegg eller melding. Den kjenner igjen sjangeren selv.
+
+Det den ikke gjør, er å skrive om tonen din. En vanlig chatbot gir deg teksten
+tilbake i sitt eget språk, med høflighetsfraser du ikke sa. Denne fjerner «eh»
+og gjentakelser, og lar resten stå.
+
+**Start her hvis du aldri har satt opp en agent før.** Ingen nøkler, ingen
+integrasjoner, resultat på fem minutter.
+
+Mappa heter `stemme-agenten`.
