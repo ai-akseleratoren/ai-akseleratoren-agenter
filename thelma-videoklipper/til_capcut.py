@@ -40,6 +40,21 @@ def mål_fil(sti):
     målene (0 for ren lyd).
     """
     d = pathlib.Path(sti).read_bytes()
+    # Gå toppnivåboksene til moov: d.find(b"mvhd") traff tilfeldige bytes i mdat
+    # når moov ligger sist i fila (en film ble målt til 0,9 sek).
+    pos = 0
+    while pos + 8 <= len(d):
+        størrelse, navn = struct.unpack(">I4s", d[pos:pos + 8])
+        if størrelse == 1:
+            størrelse = struct.unpack(">Q", d[pos + 8:pos + 16])[0]
+        elif størrelse == 0:
+            størrelse = len(d) - pos
+        if navn == b"moov":
+            d = d[pos:pos + størrelse]
+            break
+        if størrelse < 8:
+            break
+        pos += størrelse
     i = d.find(b"mvhd")
     if i < 0:
         return None, 0, 0

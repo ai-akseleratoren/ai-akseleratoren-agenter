@@ -1,6 +1,6 @@
 ---
 name: copy-maskin
-description: Copy-maskinen — skriver annonser, e-poster og sidetekst i kundens egen stemme, med ekte historier fra historiebanken og null oppspinn. Bruk når brukeren sier "copy", "skriv annonser", "annonsesett", "e-postsekvens", "landingsside-tekst", "copy-maskinen", eller vil ha kundetekst i en bestemt stemme.
+description: Copy-maskinen — skriver annonser, e-poster og sidetekst i kundens egen stemme, med ekte historier fra historiebanken og null oppspinn. Bruk når brukeren sier "copy", "skriv annonser", "annonsesett", "e-postsekvens", "salgssekvens", "landingsside-tekst", "copy-maskinen", "sjekk copyen", "review av copy-pakken", eller vil ha kundetekst i en bestemt stemme.
 ---
 
 # Copy-maskinen
@@ -187,6 +187,67 @@ bruke tiden sin på fag og stemme, ikke på å luke generisk lim.
 
 Målet er at hver runde gjør konteksten skarpere — ikke at hver runde blir mer
 generisk.
+
+## 10. Bestillingsluka — maskinen som går av seg selv
+
+Når copy-maskinen er i drift, kommer bestillingene i én fast kanal (Slack eller
+lignende), og en planlagt jobb leser den hver time i arbeidstiden:
+
+1. Les nye meldinger i bestillingskanalen OG i leveransekanalen. Sammenlign
+   tidsstempler som tall, ikke ved å lese datoer: en hoppet-over bestilling er
+   den dyreste feilen maskinen kan gjøre.
+2. Råstoff (stemmenotater, transkripsjoner, kundemail, innspilte videoer) høstes
+   inn i `HISTORIEBANK.md` før noe skrives.
+3. Leveransen skrives som ett dokument i en fast delt mappe (f.eks. Google Docs),
+   og lenken postes i en **intern** leveransekanal. Teamet sender videre til
+   kunden selv.
+4. Ikke be eieren trykke send på noe. Maskinen leverer ferdig; mennesker
+   bestemmer hva som går til kunden.
+
+**Delte kanaler med kunden:** mange connectorer kan ikke poste i kanaler som er
+delt med en annen organisasjon (Slack Connect). Bruk en intern kanal til
+leveranser, og les kundekanalen bare som innboks.
+
+**Planlagte jobber stopper når maskinen sover.** Kjører jobben på en bærbar, går
+bestillinger tapt de dagene den er av. Flytt den til en server når den er i
+fast drift, og sjekk av og til at jobben fortsatt finnes.
+
+## 11. Når du skal vurdere andres copy
+
+Ber noen deg sjekke en ferdig copy-pakke (annonser, mailer, sider), lever i
+denne rekkefølgen:
+
+1. **Kort dom** i to–tre setninger: hva som er sterkt, og hvor mange funn.
+2. **Må rettes:** brudd på harde regler, med ferdig omskrevet tekst som kan
+   limes inn.
+3. **Justeringer:** stemme og fakta, hver med begrunnelse.
+4. **Oppsettsfeller** i CRM-et: tagger, triggere og tak som gjør at noen får
+   to SMS og fire mailer samme formiddag.
+5. **Godkjent som det står** — si det eksplisitt, så ingen retter på det som virker.
+6. **Til kunden**, sortert etter hva som blokkerer.
+
+Spor hver historie og hvert sitat i pakken til en post i historiebanken (A11,
+B6 …). Finnes den ikke der, er den et funn.
+
+## 12. Faste regler for webinar- og salgsløp
+
+- **Ingen dato eller ukedag i annonser.** Datoen bor på landingssiden.
+  «I morgen / i dag»-hastverk tas av mail og SMS til lista, ikke av annonser.
+- **Påmeldingssiden nevner aldri opptak.** Opptak nevnes først etter
+  webinaret, og bare i mailen til dem som ikke kom, og bare hvis opptaket finnes.
+- **Takkesiden ber folk finne bekreftelsesmailen og SVARE på den.** Svaret er
+  leveringsraten for hele sekvensen.
+- **Ukjente fakta blir plassholdere,** ikke gjetning: `[KAMPANJEPRIS]`,
+  `[FRIST]`, `[BONUS]`, `[OPPSTARTSDATO]`, `[OPPTAK]`. Øverst i leveransen står
+  en tabell over hva som må fylles inn, og hvem som bekrefter det.
+- **Salgssekvens etter webinar:** én mail rett etter til dem som var med, én
+  egen variant til dem som ikke kom, og så fram mot en ekte frist. Siste kveld
+  skal føles som en melding, ikke en kampanje. Kjøpere tas ut.
+- **SMS:** kort, ingen emoji, ingen anførselstegn, ingen tankestrek (de blir
+  rare tegn på mange telefoner), og bare til dem som har gitt nummeret sitt.
+- **Respekter utsendingstaket** (f.eks. maks to mail om dagen, flere på
+  webinardagen, SMS bare på sendingsdagen). Vil kunden ha mer, er det kundens
+  liste og kundens valg, men si det høyt.
 
 ## Ufravikelige regler
 

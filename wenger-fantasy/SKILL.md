@@ -43,6 +43,42 @@ To ting faller ut av det eksempelet, og de er verdt å forstå:
   forsvinner uansett. Det er den ene gangen «bruk chippen» og «spar chippen» gir
   samme svar.
 
+## Preflight — før HVERT svar om laget, uten unntak
+
+Feilene som koster poeng er sjelden tallfeil. De er «snakket før jeg sjekket».
+Legg lista i `docs/preflight.md` og følg den som tvang, ikke som intensjon:
+
+**Før enhver påstand om «nå», «i går», «neste kamp»**
+1. `date` — hvilken dag og tidssone er maskinen i NÅ (du kan reise)
+2. Europacup-fila — var det europakamp i går, er det i uka?
+3. API-et: neste runde og nøyaktig deadline, aldri fra hukommelsen
+4. Manager-fila — aldri et managernavn fra treningsdata
+
+**Før enhver rangering eller «vi leder / ligger bak»**
+5. Er runden FERDIG? Delvise runder rangeres ikke. Vis alltid «igjen»-kolonnen.
+6. Rivalenes aktive chip (bench boost, 3xc) lest fra API-et?
+
+**Før enhver anbefaling**
+7. Skadeflagg fra API-et, ferske (tving ny henting, ikke cache)
+8. Prisen i dag, ikke i går
+9. Eksponeringsgapet mot dem du skal slå, vist?
+10. Konsentrasjon: over 35 % av forventede poeng i én kamp, flagget?
+11. Kildene lest (transkript, ikke bare tittel), og modell mot konsensus vist?
+
+**Før noe skal skje på et tidspunkt**
+12. Planlagte jobber er BACKUP. Tidskritiske ting gjør du i samtalen.
+
+**Etter hver runde**
+13. Prognose mot fasit i `docs/laerdom.md`. Feil → regel. Ingen regel → ikke lært.
+
+## Faktafiler — aldri anta, alltid slå opp
+
+`managere.json` (hvem leder hvilken klubb), `europacup.json` (hvem spiller
+Europa og når), `trendprior.json` (manuell kunnskap modellen ikke ser).
+Modellens treningsdata er gammel: managere byttes, spillere selges. Bruk filene,
+og oppdater dem med kilde og dato når research finner noe nytt. Et råd bygget på
+feil manager i en klubb er verre enn intet råd.
+
 ## Modellen
 
 **Lagstyrke.** Spillets egen vanskelighetsgrad er ett håndsatt tall per kamp, og
@@ -101,6 +137,20 @@ tidlig og avvik bare på ny informasjon.
 spiller — han er en risiko for null poeng i en runde du ikke får gjort om. Premien
 for å eie nailed-spillere er større enn tallene alene tilsier når du ikke rekker å
 følge med før deadline.
+
+**Stående vedtak.** Bestemmer eieren noe på forhånd («bench boost i runde 6 hvis
+ikke noe ekstraordinært skjer»), skriv vedtaket inn i `WENGER.md` med frist og
+hva som regnes som ekstraordinært. Det er en fullmakt: ikke spør på nytt, utfør
+og meld fra. Et vedtak som ikke blir utført fordi en planlagt jobb ikke fyrte,
+koster like mye som et feil vedtak. Går en frist likevel tapt: skriv årsaken i
+lærdomsloggen, flytt chipen til beste nye runde, og si det rett ut.
+
+**Klubbrisiko.** Når noe utenfor banen truer en hel klubb (sanksjon, salg,
+konkurs, transferforbud), lag et vedtak med tre deler: et tak (f.eks. maks to
+spillere fra klubben, ingen nye kjøp), triggere som sjekkes hver morgen
+(høringsdato satt, kjennelse, spillere som «hviles» uten forklaring), og en
+handling ved trigger: **selg FØR markedet gjør det, ikke etter.** Bestem også
+hvem som går ut først.
 
 ## Nyheter — kilderangeringen er absolutt
 
@@ -185,13 +235,44 @@ Format: dato som overskrift, én fet setning per funn, og en pil med hva det bet
 for beslutninger. Nyeste øverst. Skriv bare det som er **observert** — ikke det du
 tror. Uten loggen gjentas den samme analysen hver runde uten at noe læres.
 
+## Utføre endringer i FPL: forslag, så kode
+
+Vil du at Wenger skal gjøre byttene selv, bygg det i to steg, så agenten aldri
+kan bekrefte sin egen plan:
+
+1. **Forslag.** Agenten leser laget, lager anbefalingen og sender et forslag:
+   bytter, 11 startere, benken i rekkefølge (reservekeeper først), kaptein,
+   visekaptein og eventuell chip. Verktøyet sjekker tropp, penger, formasjon og
+   chip FØR noe sendes. Feiler sjekken, retter agenten planen og prøver igjen.
+2. **Kode.** Verktøyet sender planen og en firesifret engangskode **direkte til
+   deg** (Telegram, SMS, e-post), utenom chatten. Agenten ser aldri koden; bare
+   en hash lagres. Først når du svarer «fpl <id> <kode>», utføres forslaget.
+3. Agenten ber aldri om koden og gjetter den aldri. Vil du endre noe («behold
+   kapteinen»), lages et nytt forslag med ny kode.
+
+Bytter kan ikke angres. Laget og chipen kan endres fram til fristen.
+
+**Innlogging:** FPL bruker nå OIDC-innlogging. Den gamle cookie-metoden virker
+ikke. En refresh-token fra nettleseren kjøper en kortlivet tilgangsnøkkel, og
+refresh-tokenen **roteres ved hver bruk**: den nye må lagres med en gang (fil på
+disk), ellers er innloggingen borte. Faller den ut: kopier en fersk
+`refresh_token` fra nettleserens localStorage (nøkkelen starter med
+`oidc.user:`), legg den i `.env`, og slett den lagrede kopien så den nye brukes.
+
+## Vakta — varsle bare når noe endrer seg
+
+En vakt som sjekker skadeflagg og deadline hver time, skal sende én melding per
+*endring* (nytt flagg, neste tidsbånd før deadline), ikke én per kjøring. Ellers
+slutter du å lese den. Prøv på nytt ved tidsavbrudd, så en treg API-respons
+ikke sluker et varsel.
+
 ## Grenser
 
 - Agenten **poster aldri noe offentlig** og snakker aldri med ligaen din.
-- **Bytter er irreversible.** Utfør-kommandoen skal være **tørrkjøring** med mindre
-  et eksplisitt `--bekreft`-flagg sendes med, og den skal alltid skrive ut nøyaktig
-  hva den er i ferd med å gjøre først. Skriv alltid planen til brukeren og få et ja
-  før noe bekreftes. Et feilbytte følger laget resten av sesongen.
+- **Bytter er irreversible.** Ingen endring uten forslag og kode (se over). Har
+  du ikke bygget kode-flyten: utfør-kommandoen er **tørrkjøring** med mindre et
+  eksplisitt `--bekreft`-flagg sendes med, og planen skrives ut og godkjennes
+  først. Et feilbytte følger laget resten av sesongen.
 - **Modellen er et estimat.** Den vet ikke at en spiller nettopp mistet plassen
   fordi treneren var sur på ham. Det er derfor nyhetssveipen finnes.
 

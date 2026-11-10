@@ -25,14 +25,30 @@ feilen før kunden gjør det.
 - Lever podcast-/lydlenkene som sendes på SMS fortsatt?
 - Endret opptakssiden seg etter siste webinar, eller ligger forrige opptak der?
 - Ble annonsene skrudd av ved webinarstart, og kom ny dato inn raskt nok?
+- **Virker påmeldingen faktisk?** Sully melder seg på som en testlead: sender
+  skjemaet, sjekker takkesiden, CRM-taggen og at bekreftelsesmailen kommer fram
+  med riktig dato. På webinardagen sjekker den at påminnelsene kommer. Pikselen
+  blokkeres, så testen aldri teller som lead
+- **Brenner annonsene penger uten påmeldinger?** Forbruk siste to timer og null
+  leads gir rødt varsel med en gang
+- Dekker siden det kunden faktisk godkjente, ikke bare det som sto der i går?
 
-**Hva Sully ALDRI gjør:** retter noe selv. Den sier fra. Mennesker fikser.
+**Hva Sully ALDRI gjør:** retter noe selv, endrer annonser eller kundens
+systemer, eller kontakter kunden. Den sier fra i en intern kanal, én gang per
+endring. Mennesker fikser.
+
+**Byggemodus:** har du mange kunder, er det tyngste å få fasiten inn. En egen
+morgenjobb samler svar fra teamet, fyller kontraktene, purrer den som blokkerer
+(maks hver tredje dag) og holder en tavle: X av N kunder overvåket.
 
 **Du trenger:**
 - Claude Code, Python 3 og Playwright med Chromium (`playwright install chromium`)
-- URL-ene til sidene i funnelen(e) dine
+- URL-ene til sidene i funnelen(e) dine, helst i ett register (Notion, regneark)
+  som er eneste kilde til sannhet
 - Piksel-ID og eventuelt annonsekonto-ID for hver funnel
 - Valgfritt: et sted rapporten skal lande (Slack) og en scheduled task/cron
+- For registreringstesten: en innboks vakten kan lese (plussadresser), og
+  lesetilgang til CRM-et
 
 **Kom i gang:**
 1. Lag mappa `.claude/skills/funnelvakt/` i prosjektet ditt og lim inn `SKILL.md`.
@@ -44,6 +60,9 @@ feilen før kunden gjør det.
    skriver `rapporter/vakt-DATO.md`.
 5. Sett opp en scheduled task hver morgen. La kjøringen gi exit-kode 1 når det
    finnes røde funn — det er signalet cron varsler på, ikke en feil.
+6. Slå på registreringstesten for én funnel: fyll `registreringstest` i
+   kontrakten, kjør en tørrkjøring som bare finner feltene, og slå den på når
+   selektorene treffer.
 
 **To leseregler du må kunne før første rapport:**
 

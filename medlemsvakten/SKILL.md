@@ -33,8 +33,11 @@ python3 medlemsvakt.py --csv fil    # til regneark
 ```
 
 Skriptet trenger to kilder:
-- **Stripe** via `STRIPE_API_KEY` i `.env` (restricted key — har charges og
-  customers, men IKKE subscriptions)
+- **Stripe** via `STRIPE_API_KEY` i `.env` (restricted key med lesing av
+  charges og customers). Skriptet utleder «aktiv» fra betalinger. Gi nøkkelen
+  også lesing av **subscriptions og invoices** hvis du kan: da kan du slå opp
+  ekte abonnementsstatus og fornyelsesdato når noe skal avgjøres, i stedet for
+  å gjette.
 - **Skool-eksporten** som CSV. Den må hentes manuelt: Skool → Members → Export.
   Krever en e-postkode eieren må skrive inn selv. Be om den når fila er eldre
   enn en uke; du kan ikke hente den selv.
@@ -67,6 +70,18 @@ fjerning av noen i denne gruppen uten at han har sagt hvem som er hva.
 medlemmer ikke skilles fra gratis inviterte automatisk. Si fra om det når
 gruppen diskuteres — det er en kjent blindsone, ikke en feil i dataene.
 
+**Før noen foreslås fjernet:** sjekk ALLE steder folk kan ha betalt — Stripe,
+fakturaer i CRM-et, bankoverføringer og andre betalingsløsninger du bruker.
+Legg fram lista med navn, når de ble med og hvorfor du mener de ikke betaler.
+Er betalingen uklar for én person: hold den personen tilbake og si det. Eieren
+sier ja, så fjernes de i én runde.
+
+## Daglig før nye slippes inn
+
+Sjekk forespørslene om å bli med mot betalingene. Har personen betalt: slipp
+inn. Har de ikke: la forespørselen ligge og nevn den. Det er den enkleste måten
+å stoppe lekkasjen på før den oppstår.
+
 ## Påminnelsesløpet ved manglende betaling
 
 Tonen er vennlig og forutsetter at det er en teknikalitet, ikke en beslutning.
@@ -85,6 +100,21 @@ dem. Mange kommer tilbake.
 
 Ved dag 21: legg fram navnet med hvor lenge det er siden siste betaling og hvor
 mange påminnelser som er sendt. Eieren avgjør.
+
+### Kortfeil er ikke oppsigelse
+
+- **«Cancellation requested» i Stripe betyr ikke at kunden sa opp.** Lages
+  abonnementet fra et annet system (CRM, betalingsside), kan det systemet
+  avslutte abonnementet via API-et etter noen avviste kort — og Stripe logger
+  det som en forespurt kansellering. Se på betalingene først: finnes det
+  feilede trekk før kanselleringen, er det et kortproblem. Send lenke til nytt
+  kort, ikke et farvel. Kall det oppsigelse bare når kunden selv har sagt det.
+- **Å betale den åpne fakturaen starter ikke et kansellert abonnement på
+  nytt.** Det må settes opp igjen manuelt. Si det til den som ordner det.
+- **Fornyelsene lekker på kort, ikke på beslutninger.** Når årsmedlemmer
+  faller av ved fornyelse, er det oftest et utgått kort. Sjekk kortets
+  utløpsdato (fra siste vellykkede betaling) en måned før årsfornyelsen, og be
+  om nytt kort i god tid. Det er de billigste medlemmene du noen gang beholder.
 
 ## Rapportformat
 
@@ -110,10 +140,12 @@ skjemaets skyld.
 
 - **Tall du ikke har hentet, oppgir du ikke.** Er Skool-eksporten gammel, si det
   og oppgi datoen den er fra.
-- **«Aktiv» er utledet, ikke hentet.** Stripe-nøkkelen mangler subscriptions, så
-  aktiv betyr «betalte innen 45 dager (mnd) / 400 dager (år)». En som nettopp har
-  kansellert, men betalte for tre uker siden, teller som aktiv. Nevn dette når
-  tallet brukes til noe som betyr noe.
+- **«Aktiv» i skriptet er utledet, ikke hentet:** «betalte innen 45 dager
+  (mnd) / 400 dager (år)». En som nettopp har kansellert, men betalte for tre
+  uker siden, teller som aktiv. Har nøkkelen subscriptions, bruk Stripe-status
+  når tallet brukes til noe som betyr noe. Ellers: nevn det.
+- **Betalende medlemmer skal ikke få salgsmail** for det de allerede har
+  kjøpt. Merk dem i CRM-et så salgsløpene hopper over dem.
 - **Interne kontoer skal aldri foreslås fjernet.**
 - **Aldri legg e-postlister i chat-meldinger** eller andre steder de ikke hører
   hjemme. Navn og antall holder; hele lista går i regneark eller direkte til eieren.

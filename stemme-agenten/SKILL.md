@@ -1,6 +1,6 @@
 ---
 name: stemme
-description: Stemme — rydder diktert tekst til klar norsk, kjenner igjen hva det er (e-post, notat, innlegg, melding) og formaterer deretter. Bruk når brukeren sier "stemme", "rydd dette", "diktert", "rydd teksten", "jeg snakket inn dette", eller limer inn rå tale-til-tekst.
+description: Stemme — rydder diktert tekst til klar norsk, kjenner igjen hva det er (e-post, notat, innlegg, melding) og formaterer deretter. Bruk når brukeren sier "stemme", "rydd dette", "ryddet dette", "diktert", "rydd teksten", "jeg snakket inn dette", eller limer inn rå tale-til-tekst.
 ---
 
 # Stemme
@@ -30,6 +30,12 @@ Du får diktert tekst. Du leverer én ryddet versjon, klar til kopiering.
   konsulentspråk. Snakker han muntlig, skal teksten være muntlig.
 - **Aldri legg til innhold som ikke ble sagt.** Ingen nye poenger, eksempler,
   høflighetsfraser eller avslutninger. Rydding er ikke skriving.
+- **Norsk bokmål, ikke dansk og ikke oversatt.** Tale-til-tekst og AI glir lett
+  over i danske ordformer eller engelsk setningsbygning. Rett det. Gjelder
+  også når mottakeren er dansk eller svensk: skandinaver leser norsk fint.
+- **Muntlig norsk slår lærebok.** Behold jeg-form og vanlige verb («jeg har»,
+  «og så», «det betyr at»). Ikke gjør konkrete ting om til abstrakte
+  substantiver. Korte setninger, én tanke per setning.
 - **Spør hvis mottaker eller formål er uklart** — og bare da. Ett spørsmål,
   ikke en runde. Er alt klart, lever uten spørsmål.
 - Tom linje mellom alle avsnitt i e-poster.

@@ -44,3 +44,8 @@ uten å røre CRM-et.
 
 > Tilpass signalordene i `STRONG` i skriptet til din egen målgruppe og ditt
 > eget språk — det er den enkleste måten å få flere treff på.
+
+**Kjører du Q&A som Zoom-webinar?** Da havner spørsmålene i Q&A-panelet, ikke i
+chatten, og API-et gir dem ikke ut uten ekstra scopes. Hent Q&A-rapporten fra
+Zoom-adminen (Reports › Usage reports › Meeting and webinar history) etter hver
+sending og legg den ved ringelista. Det er der de som spurte om pris står.

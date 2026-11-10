@@ -14,10 +14,27 @@ klokkeslett, og hvor lenge en annonse holder før den slutter å virke.
   er for mye klikking.
 - Vinnerannonser dukker opp igjen som «nye» annonser i nye kampanjer, så tallene
   spres og vinneren blir usynlig.
+- CPL stiger fra i fjor til i år, og ingen vet om det er annonsene, siden
+  eller måten kontoen drives på.
 
 Analytikeren henter alt via Meta Marketing API, cacher det lokalt og skriver ett
-langt tallgrunnlag du kan lese på 15 minutter. Den er **lesende** — den rører
+langt tallgrunnlag du kan lese på 15 minutter. Den er **lesende**. Den rører
 aldri kontoen.
+
+## Hva agenten gjør
+
+- Tallgrunnlag over 6–12 måneder: plassering, målgruppe, format, kreativer,
+  levetid, ukedag, klokkeslett, av/på-mønster
+- Skiller slitte kreativer fra aldrende adsett med en paret test
+- Deler CPL i før og etter klikket, så du vet om problemet er annonsen eller siden
+- Finner vinnerkreativene, og sjekker om de fortsatt kjører
+- Sammenligner i fjor med i år: struktur, læringsfase, uro i kontoen,
+  retargeting, format, og om fjorårets vinnere ble tatt med videre
+
+## Hva agenten ALDRI gjør
+
+Endrer, pauser eller aktiverer noe i kontoen. Siterer et tall uten å si
+hvilken slice det kom fra. Bruker pikselens kjøpstall som fasit.
 
 ## Hva du trenger
 
@@ -29,15 +46,19 @@ aldri kontoen.
 ## Kom i gang
 
 1. Kopier `SKILL.md` inn som `.claude/skills/annonseanalyse/SKILL.md` i
-   prosjektet ditt, og legg `hent_meta.py` og `analyse.py` i `scripts/`.
+   prosjektet ditt, og legg de fire skriptene i `scripts/`.
 2. Kopier `.env.example` til `.env` og fyll inn token og konto-ID. Aldri i git.
 3. Hent dataene: `python3 scripts/hent_meta.py` (cacher i `data/` —
    `--fersk` tvinger ny henting).
-4. Kjør analysen: `python3 scripts/analyse.py 2025-08-01` — den skriver
-   `rapporter/tallgrunnlag-….md`.
+4. Kjør analysen: `python3 scripts/analyse.py 2025-08-01`. Den skriver
+   `rapporter/tallgrunnlag-….md`. Legg til tilleggsanalysene med
+   `python3 scripts/analyse_ekstra.py 2025-08-01 >> rapporter/tallgrunnlag-….md`
+   og se vinnerne med `python3 scripts/vinnere.py data 2025-08-01`.
 5. Be Claude lese tallgrunnlaget og skrive tolkningen i
    `rapporter/analyse-DATO.md`. Neste gang: les forrige analyse først, så du
    bygger videre i stedet for å gjenta deg selv.
+6. Har du to år med data: hent i fjor i egen mappe (`--data data_i_fjor`) og
+   be om «i fjor mot i år». Kommandoene står i SKILL.md.
 
 ## De fem tolkningsreglene
 

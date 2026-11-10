@@ -106,11 +106,12 @@ def get_chat_text(tok, mid, start_time):
     rec = ztry(tok, f"/meetings/{mid}/recordings")
     if rec is None:
         day = datetime.fromisoformat(start_time.replace("Z", "+00:00")).date()
-        d = ztry(tok, f"/users/{ZOOM_USER}/recordings?from={day - timedelta(days=1)}"
-                      f"&to={day + timedelta(days=1)}&page_size=30")
-        for m in (d or {}).get("meetings", []):
-            if str(m.get("id")) == str(mid):
-                rec = m
+        span = f"from={day - timedelta(days=1)}&to={day + timedelta(days=1)}&page_size=30"
+        # Kontolista (accounts/me) virker ofte når både per-møte og per-bruker mangler scope.
+        for path in (f"/users/{ZOOM_USER}/recordings?{span}", f"/accounts/me/recordings?{span}"):
+            d = ztry(tok, path)
+            rec = next((m for m in (d or {}).get("meetings", []) if str(m.get("id")) == str(mid)), None)
+            if rec:
                 break
     if not rec:
         return None, None

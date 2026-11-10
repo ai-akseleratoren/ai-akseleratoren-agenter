@@ -8,6 +8,8 @@ omskoleres til din virksomhet.
 
 ## Slik bruker du en agent
 
+Hent alt med `git clone https://github.com/ai-akseleratoren/ai-akseleratoren-agenter.git`, eller trykk på den grønne Code-knappen og velg Download ZIP. Har du hentet før, kjører du `git pull` for å få de nyeste versjonene.
+
 1. Åpne mappa til agenten du vil ha, og les `README.md` — den forklarer hva
    agenten gjør og hva du trenger.
 2. Kopier `SKILL.md` inn i ditt eget prosjekt, i mappa
@@ -22,6 +24,8 @@ Har du aldri gjort dette før: start med **Referat-agenten** eller
 **Jocko**. De trenger ingen integrasjoner og gir resultat første dagen.
 
 ## Agentene
+
+Sist oppdatert 10. november 2026. Alle agentene er hentet fra versjonene jeg bruker i dag, med det de har lært siden sist.
 
 ### Økonomi
 - **warren-finansdirektor** — ukentlig scorecard, gjeldsvakt, cash-alarm
@@ -38,6 +42,10 @@ Har du aldri gjort dette før: start med **Referat-agenten** eller
 - **webinar-telleren** — teller påmeldinger og varsler deg underveis
 - **sully-funnelvakt** — overvåker at traktene dine faktisk virker
 - **thelma-videoklipper** — videoannonser fra din egen stemme, ferdig i CapCut
+- **rackham-salgsstrateg** — leser transkriptet fra et 1:1-salgsmøte og gir deg referatet, møte 2 og prisen på et 6/12-måneders samarbeid
+- **chatklonen** — fletter chatten fra tidligere webinarsendinger inn i reprisen, tidsatt etter det du faktisk sier
+- **miller-sosiale-medier** — skriver og legger i kø Facebook- og Instagram-poster, stories og reels som går ut av seg selv
+- **seo-agenten** — sjekker hva Google og ChatGPT ser på nettsiden din, om du dukker opp i søkene, og foreslår forbedringer
 
 ### Fellesskap og medlemskap
 - **skool-redaktoren** — holder liv i community-et ditt etter en fast ukesrytme
@@ -51,9 +59,11 @@ Har du aldri gjort dette før: start med **Referat-agenten** eller
 - **referat-agenten** — møte inn, referat og oppgaveliste ut
 - **kvalitetsvakten** — kvalitetssikrer alt som skal ut
 - **whatsapp-broen** — les og send WhatsApp fra Claude
+- **quy-kundeservice** — sveiper support-e-post, CRM-innboks og DM, skriver svarutkast og sender først når du har sagt ja
 
 ### Fordi det går an
 - **wenger-fantasy** — setter fotballaget. Agenter er ikke bare business.
+- **kilian-treningscoach** — sier hva du skal trene i dag, logger økta og holder deg i nakken fram mot målet ditt
 
 ## Sikkerhet — les dette
 

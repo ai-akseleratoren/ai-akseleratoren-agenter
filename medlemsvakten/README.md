@@ -17,6 +17,9 @@ Første gang vi kjørte denne på vårt eget medlemskap, fant vi 26 som betalte 
 - Matcher også på navn, så folk som betaler fra jobbmailen og logger inn med
   privatmailen ikke havner i feil bunke
 - Kjører et vennlig påminnelsesløp ved manglende betaling: dag 1, 7, 14 og 21
+- Skiller kortfeil fra ekte oppsigelser — de fleste som «slutter» har bare et
+  utgått kort, og skal ha en lenke til nytt kort, ikke et farvel
+- Sjekker forespørsler om å bli med mot betalingene før noen slippes inn
 
 **Hva agenten ALDRI gjør:** fjerner noen fra gruppa på egen hånd, eller sender
 en betalingspåminnelse uten at du har sagt ja til akkurat den utsendingen. En
@@ -38,8 +41,9 @@ forsinkelse.
 5. Kjør `python3 medlemsvakt.py --demo` for å se at alt virker, så
    `python3 medlemsvakt.py` for rapporten.
 
-> Merk: «aktiv» er utledet, ikke hentet. Stripes restricted keys gir ikke
-> tilgang til subscriptions, så skriptet regner en som aktiv hvis det finnes en
-> betaling innen 45 dager (måned) eller 400 dager (år). En som nettopp har sagt
+> Merk: «aktiv» i skriptet er utledet, ikke hentet. Det regner en som aktiv
+> hvis det finnes en betaling innen 45 dager (måned) eller 400 dager (år). Gi
+> Stripe-nøkkelen lesing av subscriptions også, så kan agenten slå opp ekte
+> status når det betyr noe. En som nettopp har sagt
 > opp, men betalte for tre uker siden, teller fortsatt som aktiv. Si det høyt
 > når tallet brukes til noe som betyr noe.

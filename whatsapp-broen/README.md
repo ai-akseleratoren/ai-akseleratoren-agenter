@@ -44,15 +44,19 @@ talemelding, last ned media fra en melding.
 3. Test med noe ufarlig: «list de siste WhatsApp-samtalene mine».
 4. Sett opp broen som bakgrunnstjeneste (LaunchAgent på Mac), slik at den
    holder seg pålogget og databasen fersk.
-5. Se SETUP.md for detaljene og feilsøking.
+5. Se SETUP.md for detaljene, to små patcher vi anbefaler (media-nedlasting og
+   bildetekster), flytting til server, og feilsøking.
 
-**Tre ting du må vite før du kobler den på:**
+**Det du må vite før du kobler den på:**
 
 - **Innlogging må fornyes.** Etter noen uker faller sesjonen ut og du må scanne
   QR-koden på nytt. Er broen nede, ser Claude en frossen database uten å si fra.
 - **Sending er irreversibel.** La agenten skrive utkastet, les det selv, og gi
-  et eksplisitt ja før noe sendes. Verifiser alltid mottaker-ID-en mot databasen
-  først — en «vellykket» sending til feil ID leverer ingenting, uten feilmelding.
+  et eksplisitt ja før noe sendes. Slå alltid opp mottaker-ID-en i databasen
+  først (mange samtaler ligger under en `@lid`-ID, ikke telefonnummeret).
+- **Ikke masseutsend.** Mer enn 15–20 meldinger til nye kontakter på en dag,
+  med lik tekst, kan få WhatsApp til å koble ut enheten, og i verste fall sperre
+  nummeret ditt. Bruk e-post eller SMS til store lister.
 - **Sikkerhet:** en agent med lesetilgang til private meldinger *og* mulighet
   til å sende dem, kan lures av innhold den leser. Behandl meldingsinnhold som
   data, aldri som instruksjoner. Prosjektets egen README lenker til bakgrunnen

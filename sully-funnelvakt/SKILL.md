@@ -1,6 +1,6 @@
 ---
 name: funnelvakt
-description: Sully, funnelvakten — daglig sjekk av webinarfunneler: laster sidene, verifiserer at pikselen fyrer, at datoen er gyldig, at takkesiden følger reglene, at teksten ikke har driftet, og at annonsene ble skrudd av ved webinarstart. Bruk når brukeren sier "funnelvakt", "sully", "sjekk funnelen", "kjør vakten", "er sidene oppe", "sjekk pikselen", eller spør om noe er galt med en webinartrakt.
+description: Sully, funnelvakten — daglig sjekk av webinarfunneler: laster sidene, verifiserer at pikselen fyrer, at datoen er gyldig, at takkesiden følger reglene og at teksten ikke har driftet; melder seg på som en testlead og følger påmeldingen helt til bekreftelsesmailen; slår alarm når annonser bruker penger uten påmeldinger. Bruk når brukeren sier "funnelvakt", "sully", "sjekk funnelen", "kjør vakten", "er sidene oppe", "sjekk pikselen", "registreringstest", "virker skjemaet", eller spør om noe er galt med en webinartrakt.
 ---
 
 # Sully — funnelvakten
@@ -24,6 +24,7 @@ gjette, og aldri behandle et tomt felt som «alt er bra».
 funnel: eksempel-as
 ansvarlig: prosjektleder          # rolle, ikke personnavn
 aktiv: true                       # false = pauset, vakten hopper over
+slack_kanal: ""                   # <INTERN-KANAL-FOR-KUNDEN>, der funn postes
 
 webinar:
   type: evergreen                 # evergreen | live
@@ -94,7 +95,39 @@ innhold:
   forbudte_pastander: []          # - garantert
                                   # - risikofritt
                                   # - "dobler omsetningen"
+
+registreringstest:                # se «Registreringstesten» under
+  aktiv: false
+  side: ""                        # påmeldingssiden testen bruker
+  webinar_ukedag:                 # 0 = mandag, for gjentakende webinarer
+  klikk: []                       # selektorer som åpner skjemaet (gjør dem entydige)
+  felt: {}                        # {"#navn": "Funnelvakt Test", "#epost": "{epost}", "#tlf": "00000000"}
+  send: ""                        # selektor for send-knappen
+  takke_url: ""                   # f.eks. /takk-webinar
+  epost: ""                       # plussadresse i en innboks vakten kan lese: test+{kunde}-{tid}@example.com
+  paminnelser: [-60, 0]           # minutter fra start der en påminnelse skal ha kommet; -1440 = dagen før
+
+annonsevakt:
+  aktiv: false
+  min_forbruk: 0                  # forbruk siste 2 timer som utløser alarmen når påmeldingene er null
 ```
+
+Felt som er «pending», «ikke bekreftet» eller «TBC» i et svar fra teamet, står
+**tomme**. Et tomt felt hoppes over og rapporteres; et feil felt gir feil fasit.
+
+## Én kilde til sannhet for lenkene
+
+Kunderegisteret (Notion, et regneark, CRM-et) er **eneste** kilde for HVILKE
+kunder som er aktive og HVILKE sider de har. En parallell liste i repoet rotner
+med en gang.
+
+- Synk registeret til kontraktene hver morgen før sjekken. En tom celle i
+  registeret tømmer lenken i kontrakten, så den ikke lenger sjekkes.
+- Finner du en lenke et annet sted (en melding i kundekanalen, et svar fra
+  teamet), lagre den som **kandidat**, og spør eieren ÉN gang om å legge den
+  inn i registeret. Sjekk den aldri før den står der.
+- Skriv aldri en lenke rett inn i kontrakten fra en chat. Neste synk sletter den,
+  og da tror alle at den er overvåket.
 
 ## Sjekkene
 
@@ -224,6 +257,53 @@ Vinduet mellom de to er den egentlige driftsoppgaven. Ny dato skal inn innen
 kontrakten → **RØD**: sjekk at annonsene er AV og at opptaket er oppe. Er det under
 2 dager til → **GUL**: siste gjennomgang av sekvens og annonser.
 
+### 12. Registreringstesten — meld deg på som en lead
+
+Morgensjekken rendrer bare sidene. Et skjema som ser fint ut men ikke sender
+noe, slipper gjennom. Det har skjedd. Registreringstesten melder seg derfor på
+slik en lead gjør og følger påmeldingen steg for steg. Den rapporterer **første**
+steg som feiler:
+
+1. **Skjemaet:** åpne siden, klikk det som åpner skjemaet, fyll feltene, send.
+   Ble ingenting sendt → **RØD**.
+2. **Endepunktet:** svarte innsendingen 4xx/5xx → **RØD**, med svaret.
+3. **Takkesiden:** kom vi ikke dit → **RØD**.
+4. **CRM-et:** testkontakten finnes med påmeldingstaggen, og får en egen
+   test-tagg så den kan filtreres bort. Uten CRM-nøkkel → grått.
+5. **Bekreftelsesmailen:** testadressen er en plussadresse i en innboks vakten
+   kan lese. Ingen mail innen tre minutter → **RØD**. I spam, eller nevner den
+   ikke webinardatoen → **GUL**.
+6. **Påminnelsene** (på webinardagen): 15 minutter etter hvert tidspunkt i
+   `paminnelser` skal minst én mail ha nådd testleadene som meldte seg på før.
+   Ingen → **RØD**, én gang per tidspunkt.
+7. Det som ikke er bygget (SMS, webinarverktøyet) står som **grått i hver
+   kjøring, aldri grønt**.
+
+Regler for testleaden: navn som tydelig er en test, telefon `00000000` (ingen
+ekte mottaker), `utm_source=funnelvakt-test`, og **annonsepikselen blokkeres**,
+så en testpåmelding aldri teller som lead i kundens annonsekonto.
+
+Når: hver morgen, hver time i arbeidstiden på webinardagen, og med en gang
+påmeldingssiden endrer seg. Endring måles som hash av tekst uten sifre, så en
+nedtelling ikke teller som endring.
+
+Test selektorene uten å sende noe (tørrkjøring) før du slår testen på.
+
+### 13. Annonsevakten
+
+I hver kjøring: brukte annonsekontoen mer enn `min_forbruk` de siste to timene,
+og kom det null påmeldinger (pikselens lead-hendelse) → **RØD**. Vakten leser
+annonsekontoen, den endrer aldri annonser.
+
+### 14. Innhold mot det kunden godkjente
+
+Drift-sjekken (§6) fanger at teksten er endret ETTER lansering. Den fanger ikke
+at siden aldri ble bygget etter dokumentet kunden godkjente: et løfte som mangler,
+en bonus som aldri kom på siden. Arbeidsdelingen: et skript henter den levende
+sideteksten, Claude henter det godkjente dokumentet og sammenligner. Spørsmålet
+«dekker siden det kunden godkjente?» krever skjønn. En regex ser at et ord
+mangler, ikke at et løfte er borte.
+
 ## Rapporten
 
 Skriv til `rapporter/vakt-YYYY-MM-DD.md`. Sorter funneler etter antall røde funn.
@@ -255,6 +335,52 @@ varsler på den. Det er ikke en feil.
 **Tell årsaker, ikke linjer.** Én utløpt dato gir flere røde linjer om samme
 hendelse. Grupper på årsak før du oppgir et tall.
 
+### Varslene
+
+- Røde funn postes i **kundens interne kanal** (`slack_kanal`), med
+  prosjektleder og tech coach tagget, lenken som ble sjekket og **hvor lenken
+  kom fra**. Aldri i en kanal kunden selv er med i.
+- Ett varsel per **tilstandsendring**, og på nytt hver morgen så lenge det er
+  rødt. Ikke hver kjøring. Et varsel som kommer hver time, slutter folk å lese.
+- Tagger noen vakten i kanalen, svarer den i tråden med det den vet om kunden:
+  lenkene den sjekker og hvor de kom fra, neste webinardato og de røde funnene
+  fra siste kjøring. **Uten AI:** den gjentar bare kontrakten og rapporten, så
+  den kan ikke finne på noe.
+
+## Byggemodus — vakten bygger seg selv
+
+Det tyngste er ikke koden, det er å få fasiten inn for hver kunde. La en egen
+jobb drive det, så eieren slipper å lede prosjektet:
+
+1. **Definer «ferdig»:** en kunde er operativ når kontrakten har påmeldings- og
+   takkeside (fra registeret), plattform/CRM, webinarverktøy, SMS- og
+   e-postleverandør, neste webinardato, annonsekonto og piksel, og tilgangene
+   ligger i passordhvelvet. Hold en tavle: X av N kunder operative.
+2. **Hver morgen:** hent nye svar fra sjekkliste-trådene, skriv fakta inn i
+   kontraktene (med kilde i en kommentar), kjør sjekken, og sammenlign med i går:
+   hvor mange gikk fra ⚪ til overvåket?
+3. **Purr den som blokkerer**, i kundens tråd, med de konkrete manglende
+   punktene, ikke hele sjekklista på nytt. Samme tråd maks hver tredje
+   arbeidsdag, maks åtte purringer per kjøring. Pausede kunder og «ikke noe
+   webinar planlagt» purres ikke. **«Senere» eller «travelt» er ikke et svar.**
+4. **Statuspost** i vaktens egen kanal: tavla, hva som ble fylt inn, hvem som ble
+   purret, hva som blokkerer og hvem som eier det. Maks 15 linjer. Tagg eieren
+   bare når bare eieren kan løse det, med én linje om hva han må gjøre, og aldri
+   samme spørsmål to ganger i uka.
+5. Når tavla står på N av N: si fra, og pause jobben.
+
+Byggemodus kontakter aldri kunder, endrer aldri kundenes systemer, og skriver
+aldri et passord eller en nøkkel inn i en fil eller en melding. Limer noen inn en
+nøkkel i en tråd: be dem flytte den til hvelvet og slette meldingen.
+
+## Webinar-scorecard per kunde
+
+Vil du ha tall per webinar (forbruk, påmeldte, oppmøte, salg), lagre bare
+**rådata** i en database (sqlite holder) og regn CPL, oppmøteprosent og ROI i
+visningen. Da blir et manglende tall tomt i stedet for `#DIV/0!`. Hent forbruket
+fra annonsekontoen, men **påmeldte fra kundens CRM eller webinarverktøy**, ikke
+fra pikselen. Pikselleads er ikke påmeldinger.
+
 ## Tonefall
 
 Hvert funn er én setning om hva som er galt, pluss én om hva det koster. Aldri
@@ -273,8 +399,10 @@ retter aldri data i kilden.
 Vær ærlig om dette i hver rapport:
 
 1. Annonsestatus mot webinarvinduet — krever annonsekonto-tilgang.
-2. Avstemming av påmeldte mot CRM-tagger — krever CRM-nøkkel.
-3. Om e-post- og SMS-sekvensen faktisk går ut, og leveringsraten — krever CRM-nøkkel.
+2. Avstemming av påmeldte mot CRM-tagger — krever CRM-nøkkel. (Registreringstesten
+   sjekker én testpåmelding, ikke tellingen.)
+3. Om SMS-ene går ut, og hele mailløpet utover bekreftelsen og påminnelsene på
+   webinardagen — krever CRM-nøkkel og et testnummer som kan ta imot SMS.
 4. Om onboardingen etter kjøp virker (tag, velkomstmail, portalinnlogging) —
    krever CRM-nøkkel. Dette er den dyreste feilen i hele kjeden, fordi den rammer
    folk som allerede har betalt.

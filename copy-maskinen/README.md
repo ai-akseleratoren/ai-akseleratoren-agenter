@@ -19,6 +19,13 @@ stopper den og ber om det i stedet for å fylle på.
   skjelett-test, frase-test)
 - Sjekker at vinkelen faktisk er innenfor det kunden leverer, før den skriver
 - Logger tilbakemelding tilbake i kontekstfila, så hver runde blir skarpere
+- Kan gå av seg selv: leser en bestillingskanal hver time, høster råstoff inn i
+  banken, og legger leveransen som dokument i en delt mappe med lenke i en
+  intern kanal
+- Vurderer andres copy-pakker i fast form: må rettes, justeringer,
+  oppsettsfeller i CRM-et, godkjent som det står
+- Setter plassholdere (`[PRIS]`, `[FRIST]`, `[BONUS]`) der fakta ikke er
+  bekreftet, i stedet for å gjette
 
 **Hva agenten ALDRI gjør:** finner på en historie, «forbedrer» en detalj,
 gjenbruker samme frase i hele settet, eller publiserer selv. Kunden godkjenner.
@@ -42,6 +49,10 @@ gjenbruker samme frase i hele settet, eller publiserer selv. Kunden godkjenner.
    ekte materiale til denne vinkelen» — det er agenten som gjør jobben sin.
 5. Kunden retter. Logg hver rettelse i `KONTEKST.md` under «ikke bruk» eller
    «stemmemarkører». Det er der maskinen blir god.
+
+6. Når det går fint i et par uker: lag en fast bestillingskanal og en planlagt
+   jobb som leser den hver time (se §10 i SKILL.md). Kjør jobben på en maskin
+   som alltid er på.
 
 > Historiebanken er hele poenget. En tom bank gir generisk copy uansett hvor
 > god prompten er.

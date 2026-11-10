@@ -34,6 +34,10 @@ dine med finere ord, eller gjør en muntlig tekst formell.
    rettelsen inn i seksjonen «Tilpass til deg selv», så gjør den ikke samme
    feil igjen.
 
+> Tips: kjører du agentene dine på en server med en Telegram-bot, legg Stemme
+> inn der også. Da dikterer du, sender, og får ferdig tekst tilbake uten å
+> åpne maskinen.
+
 > Tips: den blir best når du gir den dine egne regler. «Aldri utropstegn»,
 > «alltid du-form», «kort i Slack» — tre linjer er nok til at teksten begynner
 > å høres ut som deg.

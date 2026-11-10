@@ -1,45 +1,60 @@
-# North Star — markedssjef-agenten
+# North Star — AI-assistenten for markedsteamet
 
-En AI-agent som leder markedsarbeidet ditt mot ÉN nordstjerne-KPI: å fylle
-pipelinen til hovedtilbudet ditt. Alt annet — annonser, webinarer, e-post,
-lavterskeltilbud — er trapper som skal lede dit.
+En AI-agent som kjører markedsteamets uke mot ÉN nordstjerne: salg av
+hovedtilbudet per uke. Den lager ukeplanen, følger opp fristene, sjekker alt før
+det går live, kontrollerer annonsene hver morgen, og skriver én ærlig ukesrapport.
 
-## Hvilket problem løser den?
-
+**Problemet den løser:**
 - Markedsføring uten prioritering: alt føles like viktig, ingenting måles mot
   ett mål.
-- Kampanjer lanseres i siste liten uten plan, godkjenning eller tekst-QA.
-- Tall bor i hodene på folk. Avvik oppdages for sent.
+- Kampanjer lanseres i siste liten, og den som bygde siden er den eneste som har
+  sett på den. Pikselen fyrer på feil hendelse, takkesiden mangler
+  kalenderlenke, en annonse har gammel dato.
+- Webinarmailen «gikk ut», men ingen sjekket at den faktisk ble levert.
 - Ingen følger opp hva teamet lovte på ukemøtet.
 
-North Star overvåker tallene daglig, fører markedskalender minst 4 uker frem,
-purrer på frister — og anbefaler alltid, men beslutter aldri.
+**Hva North Star gjør:**
+- **Prelansering-sjekkliste** på hver side, mail, SMS, sporing og annonse,
+  sjekket mot den ekte siden og ekte data, ikke kildekoden
+  (`prelansering-sjekkliste.md`)
+- **Annonsekontroll hver morgen:** budsjett, CPL mot fire uker, forbruk uten
+  resultat, hendelse mot side, slitasje, datoer i annonser. Stille når alt er fint
+- **Utsendingssjekk rundt webinarer:** planlagt dagen før, levert 15 minutter
+  etter, salgsoppfølging startet og kjøpere unntatt etterpå
+- **Ukeplan og oppfølging:** beslutninger fra ukemøtet blir oppgaver med eier og
+  baklengs frister (utkast −7, godkjenning −4, test −2)
+- **Pulser og ukesrapport fra skript,** ikke fra modellen, så tallene er like og
+  ekte hver gang. To kanaler: annonser for seg, resten for seg
 
-## Hva du trenger
+**Hva North Star ALDRI gjør:** lanserer, sender til en liste, bruker
+annonsepenger, endrer en annonse eller publiserer tekst som ikke er
+kvalitetssikret. Den vurderer heller aldri enkeltpersoner i en åpen kanal. Funn
+tas opp som et spørsmål til den som eier arbeidet, og de får 24 timer.
 
-- Claude Code installert
-- Et sted tallene bor: CRM (pipeline/leads), annonsekonto, ev. betalingsdata
-- En teamkanal (f.eks. Slack) der agenten kan varsle
-- En mappe/repo for pulsrapporter, kalender og beslutningslogg
+**Du trenger:**
+- Claude Code
+- Lesetilgang til der tallene bor: betalingsløsning, annonsekonto, CRM
+- En oppgaveliste teamet faktisk bruker (Notion, ClickUp e.l.)
+- To teamkanaler: én for annonser, én for resten av markedsføringen
+- En mappe/repo for kalender, rapporter og beslutningslogg
 
-## Kom i gang
-
-1. Kopier `SKILL.md` inn som `.claude/skills/north-star/SKILL.md` i prosjektet.
-2. Definer nordstjernen din: hvilket tall er «nye kvalifiserte leads/uke» for
-   hovedtilbudet ditt? Skriv det inn i skillen.
-3. Fyll inn rollene: hvem beslutter (eier/driftsleder), hvem kvalitetssikrer
-   tekst, hvem eier teknisk sporing.
-4. Kjør første puls manuelt: «North Star, kjør daglig puls.» Juster kildene til
-   dine egne script/API-er.
-5. Når pulsen sitter: sett den opp som daglig planlagt oppgave, og legg til
-   ukemøte-modusen på fast ukedag.
+**Kom i gang:**
+1. Kopier `SKILL.md` og `prelansering-sjekkliste.md` til
+   `.claude/skills/north-star/` i prosjektet.
+2. Bestem nordstjernen: hvilket tall er «salg av hovedtilbudet per uke», og hvor
+   leses det? Skriv det inn i skillen.
+3. Fyll inn rollene: hvem beslutter, hvem kvalitetssikrer tekst, hvem eier
+   sporingen. Fyll inn utsendingstaket ditt.
+4. Kopier `.env.example` til `.env` og legg inn lesenøkler.
+5. Start med prelansering-sjekken: «North Star, er påmeldingssiden klar til
+   lansering?» Det gir mest igjen den første uka.
+6. Lag pulsene som små skript som skriver ferdig tekst (tall rett fra API-ene),
+   og kjør dem som planlagte jobber. La agenten gjøre det som krever skjønn:
+   annonsekontrollen, oppfølgingen og ukesrapportens anbefaling.
 
 ## Kjerneprinsippene
 
-- Agenten **anbefaler — ledelsen beslutter**. Aldri pengebruk, utsendelser
-  eller funnel-endringer på egen hånd.
-- All kundevendt tekst kvalitetssikres av et menneske før publisering.
-- Alt som lanseres skal ha stått i kalenderen først: utkast 7 dager før,
-  godkjenning 4 dager før, teknisk test 2 dager før.
-- Rapportering i EOS-scorecard-form: ett tall per linje, én eier, ukesmål,
-  på/av sporet.
+- Agenten **anbefaler og sjekker — ledelsen beslutter**.
+- Den som bygger, er aldri den eneste som sjekker.
+- Tall fra skript og API-er, aldri fra modellens hode.
+- Stille når alt er fint. Et varsel skal bety noe.

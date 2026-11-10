@@ -38,7 +38,7 @@ from til_capcut import flytt, mål_fil                # noqa: E402
 GLIPE = 0.01   # MCP-en avviser klipp som starter nøyaktig der forrige slutter
 TEKSTBREDDE = 0.82   # andel av bildebredden teksten får bruke
 MAKS_TEGN = 22       # tegn per linje før vi bryter selv (liten tekst)
-MAKS_TEGN_STOR = 14  # størrelse 16+: 22 tegn rant ut av bildet (PE 3. sep 2026)
+MAKS_TEGN_STOR = 14  # størrelse 16+: 22 tegn rant ut av bildet
 
 
 def bryt(tekst, maks=MAKS_TEGN):
@@ -114,7 +114,7 @@ def klippunkter(antall, total, lengde):
 def bygg(plan, navn):
     # To former for plan:
     #   "lyd"   — en ren lydfil, klippene fyller hele bildet
-    #   "aroll" — PEs egen film. Den ligger på spor 1 i hele lengden med lyden
+    #   "aroll" — din egen film. Den ligger på spor 1 i hele lengden med lyden
     #             sin, og b-rollen legges oppå på spor 2. Da går stemmen
     #             uavbrutt, uten at vi må skille lyd fra bilde.
     aroll = plan.get("aroll")
@@ -135,7 +135,7 @@ def bygg(plan, navn):
     if aroll:
         # "skala": liggende film (16:9) må skaleres opp for å fylle det
         # stående bildet: (1920/1080) / (høyde/bredde) — 3.14 for 2688x1520
-        # "crop_x": hvor i bredden PE står (0.5 = midten). Bildet flyttes
+        # "crop_x": hvor i bredden du står (0.5 = midten). Bildet flyttes
         # sideveis så han havner midt i det stående utsnittet.
         skala = plan.get("skala", 1)
         _, kb, kh = mål_fil(aroll)

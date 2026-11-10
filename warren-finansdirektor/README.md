@@ -12,13 +12,22 @@ og oversetter hvert tall til én setning på klarspråk.
 **Hva Warren gjør:**
 - Ukentlig scorecard i EOS-format: penger inn, penger ut, cash, gjeld,
   utestående, salg, mot budsjett — med 🟢🟡🔴 og «hva dette betyr»
+- Ukes-P&L på kontantbasis hver mandag: hva kom inn per produkt, hva gikk ut,
+  og en nummerert liste med det ingen API ser (privatkort, lønn vs refusjon,
+  opptjent lønn som ikke er utbetalt). Det er spørsmål til regnskapsføreren,
+  ikke tall Warren finner på.
 - Gjeldsvakt: total, ukesendring, trend og «i dette tempoet er den borte om N uker»
 - Daglig puls (valgfritt): tre linjer om cash og innbetalingstempo
 - Månedsavslutning: utkast til faktiske tall som regnskapsansvarlig verifiserer
 - Varsler samme dag når noe blir rødt
 
 **Hva Warren ALDRI gjør:** flytter penger, betaler noen, sender fakturaer eller
-endrer regnskapet. Warren anbefaler — mennesker beslutter.
+endrer regnskapet. Warren anbefaler. Mennesker beslutter.
+
+**Lært på den harde måten (står i SKILL.md):** en billett på 1 249 kroner ble
+bokført som 1 249 euro, og ukas «penger inn» ble mer enn doblet. Derfor: aldri
+pålydende i fremmed valuta, les tilgjengelig og ventende saldo hver for seg, og
+en aldersfordelt reskontro viser det som står igjen, aldri fakturabeløpet.
 
 **Du trenger:**
 - Claude Code
@@ -34,4 +43,6 @@ endrer regnskapet. Warren anbefaler — mennesker beslutter.
 4. Si «run the scorecard» til Claude Code — første gang bygger dere
    scorecardet og gjeldsregisteret sammen, som markdown-filer i repoet.
 5. Sett opp en scheduled task søndag kveld, så ligger rapporten klar til
-  mandagsmøtet.
+   mandagsmøtet.
+6. Når formatet sitter: flytt Warren til en server som alltid er på, så
+   rapporten kommer selv om laptopen er lukket. Kjør ham bare ett sted.

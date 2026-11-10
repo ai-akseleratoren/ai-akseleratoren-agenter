@@ -44,6 +44,23 @@ opportunities i målsteget → ringeliste-fil).
   svarer sjelden «ja» på et spørsmål ingen stilte dem.
 - Legger du til nye signalord i `STRONG`, kjør `python3 zoom_leads.py selftest`
   etterpå.
+- **Webinar eller møte?** En Q&A som kjøres som Zoom-*webinar* har et eget
+  Q&A-panel. Spørsmålene som skrives der ligger IKKE i chat-filen, og
+  Q&A-endepunktene i API-et krever scopes de fleste Server-to-Server-apper ikke
+  har (de svarer tomt eller med feil). Etter hvert webinar: be brukeren hente
+  Q&A-rapporten i Zoom (Admin › Reports › Usage reports › Meeting and webinar
+  history › Q&A Report). CSV-en havner i Nedlastinger. Les den sammen med
+  ringelista, ellers mister du dem som stilte det varmeste spørsmålet.
+- Feilmeldingen «Can not access webinar info» på et møte-endepunkt betyr at
+  ID-en ER et webinar, ikke at den mangler. Bruk webinar-endepunktene.
+- Opptak og chat-fil hentes via kontolista (`/accounts/me/recordings`) når
+  per-møte-endepunktet mangler scope. Skriptet prøver det selv.
+- **Deltakerantall er ikke påmeldte.** Teller du påmeldte, ta tallet fra
+  CRM-taggen eller påmeldingsskjemaet, ikke fra Zoom.
+- Varselet om ringelista sendes til ÉN mottaker du har verifisert. Er
+  mottakeren slått opp fra et hardkodet nummer eller en ID i en gammel fil,
+  sjekk den mot kontaktlista først. Feil mottaker har skjedd, og det er
+  pinlig å rydde opp i.
 
 ## Etter hver høsting: varsle teamet
 
