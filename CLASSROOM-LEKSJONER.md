@@ -995,3 +995,100 @@ og gjentakelser, og lar resten stå.
 integrasjoner, resultat på fem minutter.
 
 Mappa heter `stemme-agenten`.
+
+---
+
+## SEKSJON: YouTube og podkast (november)
+
+_Lagt til 13. november 2026. Fire ting: to nye agenter, og to som har lært nytt._
+
+### Oppdatering til leksjon 1: slik henter du de nyeste versjonene
+
+Biblioteket ligger på GitHub, og det er alltid nyeste versjon som ligger der:
+**github.com/ai-akseleratoren/ai-akseleratoren-agenter**
+
+1. Åpne lenka.
+2. Trykk den grønne **Code**-knappen, og velg **Download ZIP**.
+3. Pakk ut ZIP-fila, og bruk mappene derfra.
+
+Har du hentet biblioteket med git før, skriver du `git pull` i mappa. Da får du
+bare det som er nytt.
+
+ZIP-fila som ligger vedlagt i leksjon 1, er fra en eldre versjon. Bruk lenka over.
+
+---
+
+### Leksjon: Klonen — en video der en klone av deg leser manuset
+
+Du filmer 45 sekunder selv og sier at resten ikke er deg. Så tar klonen over:
+en AI-avatar med din egen klonede stemme, med et lysark per avsnitt ved siden av.
+
+Stemmen lages av ett minutt der du snakker fritt. Ansiktet lages av ett
+stillbilde. Den første videoen jeg laget slik, tok én dag fra idé til YouTube.
+
+**Tre regler agenten aldri bryter:** den kloner bare deg, den merker videoen
+«AI-avatar og klonet stemme» hele tiden klonen snakker, og alt i manuset skal
+være sant.
+
+**Du trenger:** Claude Code, en fal.ai-konto med saldo, ffmpeg, Google Chrome,
+ett minutt lydopptak og ett stående bilde av deg.
+
+**Hva det koster:** talen koster lite. Avataren koster rundt seks cent per
+sekund, altså rundt ti dollar for tre minutter.
+
+**Én felle jeg gikk i, så du slipper:** jeg klonet først stemmen fra en innlest
+annonse. Den ble for blid. Bruk fri tale. Og hør på lyden før du lager
+avataren, for avataren er den dyre delen.
+
+Mappa heter `klonen-video`.
+
+---
+
+### Leksjon: Pakkeren — gjør podkasten og videoene dine lette å finne
+
+De fleste legger ut en god episode med en tittel ingen søker etter, uten
+kapitler, og med lenken gjemt bak «vis mer». Pakkeren retter det.
+
+Den henter det som ligger ute i dag og transkriptet, slår opp hva folk faktisk
+skriver i YouTube-søket, og gir deg en ferdig pakke per episode: tre titler å
+teste, beskrivelse med søkeordet og lenken øverst, kapitler med tider, tagger,
+festet kommentar og tekst til miniatyrbildet.
+
+Den publiserer aldri. Du limer inn det du vil bruke i YouTube Studio.
+
+**Du trenger:** Claude Code, Python 3 og `yt-dlp`. Ingen nøkler. Den leser bare
+offentlige data.
+
+**Én regel som er viktig:** tittelen lover bare det episoden holder. Ingenting
+i tittel, beskrivelse eller kapitler som ikke blir sagt i episoden.
+
+Mappa heter `pakkeren-podkast`.
+
+---
+
+### Nytt i Rubin: tallene fra din egen YouTube-kanal
+
+Rubin har fått et nytt skript, `yt_tall.py`. Det leser YouTube-kanalen din
+(kun lesing) og lager en rapport: visninger, sett tid, hvor mange som er igjen
+etter 30 sekunder, og hvor i videoen det bratteste fallet er.
+
+Sett den til å kjøre hver mandag. Da vet du hva neste video bør gjøre annerledes.
+
+Klikkraten på miniatyrbildet gir YouTube ikke ut til agenter. Den må du lese
+selv i YouTube Studio.
+
+Oppsettet står i README-fila i `rubin-innholdsagent`, steg 7.
+
+---
+
+### Nytt i Thelma: det en TV-klipper lærte oss
+
+En som har jobbet i TV, så på annonsene våre. Tre ting er skrevet inn i Thelma:
+
+1. **De tre første sekundene avgjør.** Første bilde skal ha bevegelse og tekst.
+2. **Pauser og «eh» måles i lyden**, med det nye skriptet `stram.py`. Ikke på øyemål.
+3. **Den ferdige lyden skrives ut som tekst** og sammenlignes med manuset.
+   Første gang vi gjorde det, fant den to feil: ett helt ord var klippet bort,
+   og ett var klippet i to.
+
+Hent `thelma-videoklipper` på nytt for å få med de nye skriptene.
