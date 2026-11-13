@@ -13,8 +13,8 @@ ffmpeg-en må ha libass (subtitles/ass-filteret). Fontene leses fra macOS sin fo
 
 import json
 import os
-import pathlib
 import shutil
+import pathlib
 import subprocess
 import sys
 
@@ -106,6 +106,9 @@ def lag_ass(plan, total, kort_lengde, ut=lambda t: t):
     return "\n".join(linjer) + "\n"
 
 
+GRADE = "eq=contrast=1.06:saturation=1.04:gamma=0.98,vignette=PI/5.5,noise=alls=5:allf=t"
+
+
 def zoomfilter(plan):
     """"zoom": [[start, slutt, faktor], ...] i utstid = hopp inn på ansiktet.
 
@@ -135,7 +138,8 @@ def filtergraf(plan, total, kort_fil, kort_lengde, ass, biter=None, ut=lambda t:
         deler = []
         for j, (start, slutt) in enumerate(biter):
             f.append(f"[s{j}v]trim={start}:{slutt},setpts=PTS-STARTPTS[p{j}v]")
-            f.append(f"[s{j}a]atrim={start}:{slutt},asetpts=PTS-STARTPTS[p{j}a]")
+            f.append(f"[s{j}a]atrim={start}:{slutt},asetpts=PTS-STARTPTS,afade=t=in:d=0.02,"
+                     f"afade=t=out:st={max(0, slutt - start - 0.02):.3f}:d=0.02[p{j}a]")
             deler.append(f"[p{j}v][p{j}a]")
         f.append("".join(deler) + f"concat=n={len(biter)}:v=1:a=1[ar][aa]")
         # "crop_x": hvor i bredden du står (0 = venstre kant, 0.5 = midten)
@@ -146,22 +150,49 @@ def filtergraf(plan, total, kort_fil, kort_lengde, ass, biter=None, ut=lambda t:
         f = [f"color=c=black:s=1080x1920:r=30:d={total}[v0]",
              f"[0:a]atrim=0:{total},asetpts=PTS-STARTPTS[aa]"]
     siste = "v0"
+    # "overgang": sekunder myk overgang inn og ut av hvert klipp (0 = harde kutt).
+    # Klippet toner inn over det som ligger under, og blir liggende `o` sekunder ekstra:
+    # enten toner det ut til a-rollen, eller så toner neste klipp inn oppå det.
+    o = plan.get("overgang", 0.25)
+    tider = [(round(ut(k["start"]), 2), round(ut(k["slutt"]), 2)) for k in plan.get("kutt", [])]
     for i, k in enumerate(plan.get("kutt", []), start=1):
         inputs += ["-i", k["fil"]]
-        a, b = round(ut(k["start"]), 2), round(ut(k["slutt"]), 2)
+        a, b = tider[i - 1]
         if b - a < 0.5:
             continue
-        f.append(f"[{i}:v]trim=0:{b - a},setpts=PTS-STARTPTS+{a}/TB,"
-                 f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1[b{i}]")
-        f.append(f"[{siste}][b{i}]overlay=eof_action=pass:enable='between(t,{a},{b})'[v{i}]")
+        ok = k.get("overgang", o)          # egen overgang på dette klippet (0 = hardt kutt på takten)
+        myk = ok if ok and b - a >= 3 * ok else 0
+        inn = k.get("inn", 0)              # hvor i kildeklippet vi starter (hopp over en treg start)
+        ton = ""
+        if myk:
+            nabo = any(b - 0.01 <= a2 <= b + myk for a2, _ in tider[i:])
+            ton = ",format=yuva420p"
+            if a >= 0.05:
+                ton += f",fade=t=in:st={a}:d={myk}:alpha=1"
+            if not nabo:
+                ton += f",fade=t=out:st={b}:d={myk}:alpha=1"
+        f.append(f"[{i}:v]trim={inn}:{round(inn + b - a + myk, 2)},setpts=PTS-STARTPTS+{a}/TB,"
+                 f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1{ton}[b{i}]")
+        f.append(f"[{siste}][b{i}]overlay=eof_action=pass:enable='between(t,{a},{round(b + myk, 2)})'[v{i}]")
         siste = f"v{i}"
     n = len(plan.get("kutt", [])) + 1
     if kort_fil:
         inputs += ["-i", kort_fil]
+        inn = ",fade=t=in:d=0.3" if o else ""
         f.append(f"[{n}:v]trim=0:{kort_lengde},setpts=PTS-STARTPTS,"
-                 f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1[k]")
+                 f"scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1{inn}[k]")
+        if o:
+            f.append(f"[{siste}]fade=t=out:st={round(total - 0.3, 2)}:d=0.3[vf]")
+            siste = "vf"
         f.append(f"[{siste}][k]concat=n=2:v=1:a=0[vc]")
         siste = "vc"
+    # "grade": felles look på hele filmen (kontrast, vignett, korn) FØR teksten, så teksten står ren.
+    # True gir standardlooken, en streng er et eget ffmpeg-filter.
+    grade = plan.get("grade")
+    if grade:
+        g = grade if isinstance(grade, str) else GRADE
+        f.append(f"[{siste}]{g}[vg]")
+        siste = "vg"
     f.append(f"[{siste}]ass='{ass}':fontsdir=/System/Library/Fonts/Supplemental[vut]")
     slutt = total + kort_lengde
     musikk = plan.get("musikk")
@@ -171,9 +202,19 @@ def filtergraf(plan, total, kort_fil, kort_lengde, ass, biter=None, ut=lambda t:
         f.append(f"[{m}:a]atrim=0:{slutt},asetpts=PTS-STARTPTS,volume={musikk.get('volum', 0.12)},"
                  f"afade=t=in:d=1,afade=t=out:st={slutt - 2}:d=2[mus]")
         f.append(f"[aa]apad=whole_dur={slutt}[tale]")
-        f.append(f"[tale][mus]amix=inputs=2:duration=first:normalize=0[aut]")
+        if musikk.get("duk"):
+            # musikken senkes når han snakker og løfter seg i pausene og på sluttkortet
+            f.append("[tale]asplit=2[tale1][tale2]")
+            f.append("[mus][tale2]sidechaincompress=threshold=0.02:ratio=5:attack=30:release=500[musd]")
+            f.append("[tale1][musd]amix=inputs=2:duration=first:normalize=0[miks]")
+        else:
+            f.append(f"[tale][mus]amix=inputs=2:duration=first:normalize=0[miks]")
     else:
-        f.append(f"[aa]apad=whole_dur={slutt}[aut]")
+        f.append(f"[aa]apad=whole_dur={slutt}[miks]")
+    # "lydnorm": jevn styrke til sosiale medier (-14 LUFS, topper under -1,5 dB).
+    # Limiteren står på -3 dB: AAC-kodingen løfter sann topp ca. 1,2 dB (målt -0,8 dBFS med limit=0.79, 11. nov 2026).
+    # loudnorm regner på 192 kHz og sender det videre; uten aresample ble annonsene kodet i 96 kHz (funnet 12. nov 2026).
+    f.append("[miks]loudnorm=I=-14:TP=-2:LRA=11,alimiter=limit=0.7:level=false,aresample=48000[aut]" if plan.get("lydnorm") else "[miks]anull[aut]")
     return inputs, ";".join(f)
 
 
@@ -182,7 +223,10 @@ def render(plan, ut, fra=None, til=None):
     lengde = mål_fil(aroll)[0] / 1e6
     # "biter": [[start, slutt], ...] i kildetid som beholdes (klipper bort
     # pauser/omstarter). Ellers 0..aroll_slutt.
-    biter = plan.get("biter") or [[0, min(lengde, plan.get("aroll_slutt", 1e9))]]
+    biter = [list(b) for b in plan.get("biter") or [[0, min(lengde, plan.get("aroll_slutt", 1e9))]]]
+    # "hale": Whisper setter slutten på siste ord for tidlig, så videoen kuttet midt i
+    # setningen (lært 11. nov 2026). Legg på luft etter siste ord, aldri forbi fila.
+    biter[-1][1] = min(lengde, biter[-1][1] + plan.get("hale", 0.5))
     ut_tid = avbildning(biter)
     total = sum(b - a for a, b in biter)
     kort = plan.get("sluttkort")
@@ -213,7 +257,13 @@ def demo():
     assert "0:01:00.00,0:01:03.50,Sluttkort" in a, a
     inputs, graf = filtergraf(plan, 60.0, "/x/k.mp4", 3.5, "/x/u.ass")
     assert inputs == ["-i", "/x/a.mp4", "-i", "/x/b.mp4", "-i", "/x/k.mp4"], inputs
-    assert "between(t,4.0,8.5)" in graf and "concat=n=2" in graf and "apad=whole_dur=63.5" in graf, graf
+    assert "between(t,4.0,8.75)" in graf and "concat=n=2" in graf and "apad=whole_dur=63.5" in graf, graf
+    assert "fade=t=in:st=4.0:d=0.25:alpha=1,fade=t=out:st=8.5:d=0.25:alpha=1" in graf and "fade=t=out:st=59.7:d=0.3[vf]" in graf, graf
+    _, gh = filtergraf({**plan, "overgang": 0}, 60.0, "/x/k.mp4", 3.5, "/x/u.ass")
+    assert "between(t,4.0,8.5)" in gh and "alpha" not in gh and "[vf]" not in gh, gh
+    # to klipp rett etter hverandre: det første toner ikke ut, det neste toner inn oppå
+    _, gn = filtergraf({"lyd": "/x/s.m4a", "kutt": [{"fil": "/x/b.mp4", "start": 0, "slutt": 5}, {"fil": "/x/c.mp4", "start": 5, "slutt": 9}]}, 20, None, 0, "/x/u.ass")
+    assert "between(t,0,5.25)" in gn and "fade=t=out:st=5" not in gn and "fade=t=in:st=5:d=0.25:alpha=1,fade=t=out:st=9" in gn, gn
     assert ass_tid(3661.234) == "1:01:01.23"
 
     # klipp: bit 0-10 og 20-30 -> kildetid 25 = utstid 15, tid i pausen = 10
@@ -223,16 +273,21 @@ def demo():
     assert "0:00:12.00,0:00:18.00,Statement" in a2, a2
     _, g2 = filtergraf({"aroll": "/x/a.mp4", "kutt": [{"fil": "/x/b.mp4", "start": 22, "slutt": 26}]},
                        20, None, 0, "/x/u.ass", [[0, 10], [20, 30]], u)
-    assert "trim=20:30" in g2 and "concat=n=2:v=1:a=1" in g2 and "between(t,12.0,16.0)" in g2, g2
+    assert "trim=20:30" in g2 and "concat=n=2:v=1:a=1" in g2 and "between(t,12.0,16.25)" in g2, g2
     assert "[0:v]split=2[s0v][s1v]" in g2, g2
     _, g5 = filtergraf({"lyd": "/x/s.m4a", "kutt": [{"fil": "/x/b.mp4", "start": 0, "slutt": 5}]}, 20, None, 0, "/x/u.ass")
-    assert "color=c=black:s=1080x1920" in g5 and "[0:a]atrim=0:20" in g5 and "between(t,0,5)" in g5, g5
+    assert "color=c=black:s=1080x1920" in g5 and "[0:a]atrim=0:20" in g5 and "between(t,0,5.25)" in g5, g5
     _, g4 = filtergraf({"aroll": "/x/a.mp4", "crop_x": 0.44}, 20, None, 0, "/x/u.ass")
     assert "crop=ih*9/16:ih:(iw-ih*9/16)*0.44:0" in g4, g4
     i3, g3 = filtergraf({"aroll": "/x/a.mp4", "musikk": {"fil": "/x/m.mp3", "volum": 0.1}}, 20, None, 0, "/x/u.ass")
     assert i3[-1] == "/x/m.mp3" and "-stream_loop" in i3 and "[1:a]atrim=0:20" in g3 and "amix" in g3, (i3, g3)
     _, g6 = filtergraf({"aroll": "/x/a.mp4", "zoom": [[1, 2, 1.2]], "zoom_y": 0.3}, 20, None, 0, "/x/u.ass")
     assert "zoompan=z='if(between(in_time,1,2),1.2,1)'" in g6 and "*0.3'" in g6, g6
+    _, g7 = filtergraf({"lyd": "/x/s.m4a", "grade": True, "lydnorm": True, "musikk": {"fil": "/x/m.mp3", "duk": True},
+                        "kutt": [{"fil": "/x/b.mp4", "start": 0, "slutt": 4, "inn": 0.5},
+                                 {"fil": "/x/c.mp4", "start": 4, "slutt": 8, "overgang": 0}]}, 20, None, 0, "/x/u.ass")
+    assert "trim=0.5:4.75" in g7 and "between(t,4,8)" in g7 and "vignette" in g7 and "[vg]ass=" in g7, g7
+    assert "sidechaincompress" in g7 and "loudnorm=I=-14" in g7, g7
     print("demo ok")
 
 

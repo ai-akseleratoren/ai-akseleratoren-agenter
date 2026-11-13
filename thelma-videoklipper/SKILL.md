@@ -115,6 +115,52 @@ Regler: lag stillbilder med teksten oppå rammene før du rendrer hele filmen
 aldri over munnen, lappen ikke over ansiktet. Ingen versaler. Vitsen må være
 det bildet viser. Hopp-zoom på setningsstart gir liv uten b-roll.
 
+## De tre første sekundene, og fluff
+
+Lært av en TV-klipper som så på annonsene våre (november 2026).
+
+**De tre første sekundene avgjør.** Første bilde skal ha både en visuell krok og en tekstkrok.
+- Bevegelse fra bilde 1. Står du stille i et vidt bilde, er det ikke en åpning. Åpne på
+  handlingen du snakker om, med stemmen din over. Regelen «åpningen er ansiktet ditt»
+  gjelder bare når ansiktet er nært og i bevegelse (selfie).
+- Tekstkroken står ferdig i første ramme, uten pop-animasjon, og sier poenget med dine egne ord.
+- Start b-rollen der bevegelsen alt er i gang, ikke på oppstillingen. `"inn"` på et kutt i
+  planen sier hvor i kildeklippet det starter.
+- Sjekk alltid en stripe av de første 3 sekundene (2,5 bilder i sekundet) før levering.
+
+**Fluff klippes med måling, ikke på øyemål.**
+- Transkriptet har bare ord. «Eh», pusting og andres stemmer står ikke der, så de må finnes
+  i lyden. `python3 stram.py film.mp4 transkript.txt` lister hullene mellom ordene: «pause»
+  (stille) eller «eh/lyd» (det er lyd uten ord). Uten argumenter kjører den en selvtest.
+- Klipp pauser over ca. 0,3 s og «eh/lyd» over 0,5 s. Kortere «eh/lyd» er ofte halen av et
+  ord: la stå.
+- Bitene inn i planen som `biter`. `stram.myk_inn` flytter starten av hver bit til nærmeste
+  dal i lyden, fordi Whisper ofte setter ordstarten litt sent.
+- Hver skjøt i a-rollen skjules: enten under b-roll, eller ved at `zoom` skifter akkurat på
+  skjøten. To skjøter med under et halvt sekund imellom ser hakkete ut: behold den minste pausen.
+- Lyd fra b-roll og montasjer brukes ikke. Folk snakker bak kamera.
+- Med `ass_fil` (levende tekst) må alle tider gjennom samme avbildning som `biter`, ellers
+  står teksten feil.
+
+**Kontrollen til slutt er ikke valgfri.** Skriv den ferdige lyden ut som tekst
+(`transkriber.py` på den rendrede fila) og sammenlign med manuset, før noe sendes videre.
+Første gang vi gjorde det, fant den to feil: ett helt ord var borte, og ett var klippet i to.
+- Når du nøler foran et ord, setter Whisper ordstarten der nølingen begynner, ikke der ordet
+  sies. Et ord med mer enn ca. 1 s til neste ord er derfor mistenkelig: se på lydnivået
+  (`stram.nivå`) før du klipper «pausen» etter det.
+- Andre stemmer nær mikrofonen skrives ut som et ord som passer i setningen. Hos oss ble en
+  caddie på golfbanen til «Men». Et ord som står alene med stille på begge sider, rett etter
+  et langt kutt, kan være en annen stemme: spør eieren.
+- `stram.nivå` filtrerer bort diskant, så s-lyder ser ut som stillhet. Flytt aldri slutten av
+  en bit tidligere bare på nivåmålingen. Skriv ut resultatet etterpå.
+- Whisper på biter under ett sekund finner på ord. Bruk lydnivået til å plassere ordet, og
+  Whisper bare på hele setninger.
+- Tekstingen skal dekke alt som blir sagt. Et hull i tekstingen gir en setning uten subjekt
+  for dem som ser uten lyd.
+- Rensing av stemmen (`audio-isolation`) er ikke standard. Lag A og B, og la eieren velge.
+- Forhåndsvisninger: krymp bildet, men kopier lyden urørt (`-c:a copy`). En forhåndsvisning
+  med nedkodet lyd fikk eieren til å tro at annonsen skurret.
+
 ## Regler for de genererte klippene
 
 **Ett motiv i høyden.** Videomodellen legger brede motiver på siden når du ber
@@ -149,6 +195,7 @@ python3 video.py prompter.txt --send --ut mappe          # lager klipp (fal.ai)
 python3 transkriber.py stemme.m4a                        # ord for ord med tid -> stemme.txt
 python3 svensk_transkript.py transkript.txt svensk.txt > transkript-se.txt
 python3 kinetisk.py --demo                               # levende tekst (bygg ass-fila i et eget lite skript)
+python3 stram.py film.mp4 transkript.txt                 # pauser og «eh» mellom ordene -> biter
 ~/capcutapi/.venv/bin/python bygg_annonse.py plan.json "Navn"     # CapCut-draft
 ~/capcutapi/.venv/bin/python render_annonse.py plan.json NO-navn.mp4 [--fra 0 --til 8]
 ```
@@ -181,6 +228,11 @@ Alle skriptene har `--demo` som selvtest uten nett.
   kontaktark med midtstrek før rendring. Ingen står midt i bildet.
 - **Ren stemme trimmes ikke av `biter`.** Klipp stillhet i starten med ffmpeg
   først, og trekk like mye fra tidene i transkriptet.
+- **Flere nøkler i planen:** `"overgang"` (sekunder myk overgang på b-roll, 0 = harde kutt,
+  kan også settes per kutt), `"inn"` på et kutt (hvor i kildeklippet det starter), `"zoom"`
+  (`[[start, slutt, faktor], ...]` i utstid, hopper inn på ansiktet), `"hale"` (luft etter
+  siste ord), `"ass_fil"` (ferdig tekstlag fra `kinetisk.py`), `"lydnorm": true` (jevn styrke,
+  48 kHz) og `"duk": true` under `musikk` (musikken senkes når du snakker).
 - **`--fra 0 --til 8`** gir en kort testbit. Se på tre rammer før du rendrer
   alt (ca. 90 sek per annonse).
 

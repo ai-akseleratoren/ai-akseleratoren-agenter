@@ -27,6 +27,9 @@ Derfor: stemmen først, bildene etterpå.
   og ser gjennom alle før de brukes
 - Klipper bort pauser og omstarter, legger b-roll inn på ordet, full teksting,
   sluttkort og lav bakgrunnsmusikk
+- Måler pauser og «eh» i lyden (`stram.py`) i stedet for å klippe på øyemål, og
+  skriver den ferdige lyden ut som tekst for å oppdage ord som ble klippet bort
+- Åpner på bevegelse, med teksten i første bilde: de tre første sekundene avgjør
 - Levende tekst: stor tekst som hopper rundt, en huskelapp som hukes av, eller
   TV-grafikk
 - Rendrer MP4 direkte med ffmpeg, og bygger samme film som CapCut-prosjekt

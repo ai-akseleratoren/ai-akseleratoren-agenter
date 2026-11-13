@@ -25,7 +25,15 @@ Har du aldri gjort dette før: start med **Referat-agenten** eller
 
 ## Agentene
 
-Sist oppdatert 10. november 2026. Alle agentene er hentet fra versjonene jeg bruker i dag, med det de har lært siden sist.
+Sist oppdatert 13. november 2026. Alle agentene er hentet fra versjonene jeg bruker i dag, med det de har lært siden sist.
+
+Nytt 13. november: **klonen-video** og **pakkeren-podkast** er nye. **rubin-innholdsagent** har fått en tallagent som leser din egen YouTube-kanal. **thelma-videoklipper** har lært å måle pauser i lyden, åpne på bevegelse og kontrollere at ingen ord ble klippet bort.
+
+### YouTube og podkast
+- **rubin-innholdsagent** — produsenten: idé, tittel og thumbnail før manus, ukentlig skann av andre kanaler, og tallene fra din egen kanal
+- **klonen-video** — en AI-avatar med din klonede stemme leser manuset, med lysark ved siden av. Alltid merket som AI
+- **pakkeren-podkast** — titler, beskrivelse, kapitler og søkeord som gjør episoder lette å finne på YouTube
+- **thelma-videoklipper** — klipper film av deg: bort med pauser og «eh», b-roll på ordet, full teksting
 
 ### Økonomi
 - **warren-finansdirektor** — ukentlig scorecard, gjeldsvakt, cash-alarm

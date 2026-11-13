@@ -24,6 +24,9 @@ rekkefølgen: bevis på etterspørsel, så pakking, så manus.
   lagret dokument per steg; tre tittel/thumbnail-kombinasjoner før det skrives
   et ord manus; kroker i tre versjoner; og en ukentlig skann av 8–10 kanaler
   som finner videoer som gjør det langt bedre enn kanalens median
+- **Tallene fra din egen kanal:** en rapport hver uke med visninger, sett tid,
+  hvor mange som er igjen etter 30 sekunder og hvor det bratteste fallet er,
+  så neste video kan rette på det forrige video mistet folk på
 
 **Hva Rubin ALDRI gjør:** publiserer eller laster opp, dikter opp tall eller
 resultater, kopierer andres titler eller manus, eller sender kundedata ut av
@@ -52,3 +55,12 @@ prosjektet.
    kanalen» og svar på kontekst-intervjuet.
 6. Legg til kanaler med «rubin, overvåk kanalen …», og sett opp en planlagt
    jobb mandag morgen som kjører outlier-skannen.
+7. Vil du ha tallene fra din egen kanal: `yt_tall.py` leser YouTube Analytics
+   (kun lesing) og lager en rapport med visninger, sett tid, og hvor i videoen
+   folk faller av. Du trenger en OAuth-klient av typen «Desktop app» i Google
+   Cloud, med «YouTube Data API v3» og «YouTube Analytics API» slått på. Legg
+   `GOOGLE_OAUTH_CLIENT_ID` og `GOOGLE_OAUTH_CLIENT_SECRET` i `.env`, kjør
+   `python3 yt_tall.py login` én gang, og så `python3 yt_tall.py rapport`.
+   `python3 yt_tall.py` uten argumenter er selvtest. Google viser «Google
+   hasn't verified this app» ved innlogging, fordi appen er din egen: trykk
+   Advanced, og gå videre.

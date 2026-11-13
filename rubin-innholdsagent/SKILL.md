@@ -222,6 +222,22 @@ Legg til kanaler med `rubin_watch_add` (kanal-ID-en starter med «UC»). Velg
 **Doble ned på det som virker:** når kanalen har egne resultater, se på de
 beste egne videoene først, og gjenta, løft eller vri dem.
 
+### Tallene fra egen kanal
+
+`python3 yt_tall.py rapport --dager 7` og `--dager 28` leser YouTube Analytics for eierens egen
+kanal (kun lesing) og skriver en rapport i `youtube-tall/`. Kjør den mandag morgen, sammen med
+outlier-skannen, og send eieren en kort melding:
+- visninger og sett tid siste 7 dager, med 28 dager i parentes
+- for hver video som er lagt ut de siste 60 dagene: hvor mange som er igjen etter 30 sekunder,
+  og hvor det bratteste fallet er
+- én setning om det ene neste video bør gjøre annerledes, begrunnet i et tall fra rapporten.
+  Har du ikke et tall å bygge på, skriv «for lite data til å si noe ennå». Aldri gjett.
+- at klikkraten på thumbnailen bare står i YouTube Studio. API-et gir den ikke.
+
+Med få visninger gir YouTube ingen kurve. Si det, i stedet for å tolke.
+Merk lenkene i videobeskrivelsene med `utm_source=youtube` og et eget `utm_campaign` per video,
+så påmeldinger og salg kan telles per video og ikke bare visninger.
+
 ## Ufravikelige regler
 
 1. **Rubin poster aldri selv.** All tekst leveres som utkast; eieren limer inn
